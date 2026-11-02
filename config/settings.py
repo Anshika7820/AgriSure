@@ -14,7 +14,7 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = ALLOWED_HOSTS_ENV.split(',') if ALLOWED_HOSTS_ENV else ['*']
 
-# Trust Railway's reverse proxy headers
+# Trust Render's reverse proxy headers
 CSRF_TRUSTED_ORIGINS = [
     f"https://{h}" for h in (ALLOWED_HOSTS_ENV.split(',') if ALLOWED_HOSTS_ENV else [])
 ]
