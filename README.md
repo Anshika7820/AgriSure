@@ -158,4 +158,5 @@ Visit `http://127.0.0.1:8000/` in your browser.
    python manage.py collectstatic --noinput
    ```
 #   A g r i S u r e  
+ #   A g r i S u r e  
  
