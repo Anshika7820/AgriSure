@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Dispute Case File #{{ dispute.id }} | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-start mb-4 pb-3 border-bottom">
+                    <div>
+                        <span class="badge bg-danger mb-1">Arbitration Tribunal Case File</span>
+                        <h3 class="fw-bold text-dark mb-0">Dispute #{{ dispute.id }}</h3>
+                        <p class="text-muted small mb-0">Contract: <a href="{% url 'contract_detail' dispute.contract.id %}" class="text-success fw-bold text-decoration-none">{{ dispute.contract.contract_number }}</a></p>
+                    </div>
+                    <div>
+                        {% if dispute.status == 'RESOLVED' %}
+                            <span class="badge bg-success fs-6">RESOLVED</span>
+                        {% elif dispute.status == 'OPEN' %}
+                            <span class="badge bg-danger fs-6">OPEN GRIEVANCE</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark fs-6">{{ dispute.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Parties Table -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="text-muted small">Party Raising Grievance:</div>
+                            <div class="fw-bold text-dark">{{ dispute.raised_by.get_full_name|default:dispute.raised_by.username }} ({{ dispute.raised_by.get_role_display }})</div>
+                            <div class="small text-muted">Filed on {{ dispute.created_at|date:"d M Y, H:i" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="text-muted small">Dispute Category:</div>
+                            <div class="fw-bold text-danger">{{ dispute.get_reason_display }}</div>
+                            <div class="small text-muted">Commodity: {{ dispute.contract.crop_name }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark">Grievance Submission & Facts</h5>
+                    <div class="p-3 bg-white rounded-3 border text-secondary leading-relaxed">
+                        {{ dispute.description }}
+                    </div>
+                </div>
+
+                <!-- Mediator Findings & Resolution -->
+                {% if dispute.resolution_notes %}
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-success"><i class="bi bi-award-fill me-1"></i> Official Conciliation Ruling & Directions</h5>
+                        <div class="p-4 bg-success bg-opacity-10 rounded-3 border border-success border-opacity-50 text-dark">
+                            <p class="mb-2">{{ dispute.resolution_notes }}</p>
+                            <div class="small text-muted border-top pt-2 mt-2">
+                                Ruling Recorded on {{ dispute.resolved_at|date:"d M Y H:i" }} by Assigned Arbitrator
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Admin Action Panel -->
+                {% if is_admin and dispute.status != 'RESOLVED' %}
+                    <div class="mt-4 p-4 bg-light rounded-3 border">
+                        <h5 class="fw-bold text-dark mb-2"><i class="bi bi-shield-lock me-1"></i> Administrative Conciliation Panel</h5>
+                        <p class="text-muted small mb-3">Record binding administrative resolution or dismissal of this dispute claim.</p>
+                        <form method="post" action="{% url 'dispute_resolve' dispute.id %}">
+                            {% csrf_token %}
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">Arbitration Status *</label>
+                                    <select name="status" class="form-select">
+                                        <option value="UNDER_REVIEW" {% if dispute.status == 'UNDER_REVIEW' %}selected{% endif %}>Under Mediation Review</option>
+                                        <option value="RESOLVED">Resolved (Reactivate Contract)</option>
+                                        <option value="REJECTED">Dismissed / Unsubstantiated</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">Official Resolution Findings & Settlement Terms *</label>
+                                    <textarea name="resolution_notes" class="form-control" rows="3" placeholder="Enter mediator directions..." required>{{ dispute.resolution_notes }}</textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary fw-bold px-4">Save & Transmit Dispute Ruling</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                <div class="mt-4 pt-3 border-top">
+                    <a href="{% url 'dispute_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Disputes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

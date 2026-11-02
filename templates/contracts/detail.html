@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Contract {{ contract.contract_number }} | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Top Action Bar -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-dark">Contract Farming Protocol</span>
+                <span class="badge badge-agri-{{ contract.status|lower }}">{{ contract.get_status_display }}</span>
+            </div>
+            <h2 class="fw-bold text-dark mb-0">{{ contract.contract_number }}</h2>
+            <p class="text-muted small mb-0">{{ contract.crop_name }} &bull; Executed on {{ contract.created_at|date:"d F Y" }}</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+            <a href="{% url 'contract_download_pdf' contract.id %}" class="btn btn-outline-danger fw-bold">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Official PDF
+            </a>
+            {% if contract.status == 'ACTIVE' or contract.status == 'PROPOSED' %}
+                <button class="btn btn-outline-warning text-dark fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#amendmentDrawer">
+                    <i class="bi bi-pencil-square me-1"></i> Propose Amendment
+                </button>
+            {% endif %}
+            {% if contract.status != 'COMPLETED' and contract.status != 'CANCELLED' %}
+                <a href="{% url 'dispute_create' contract.id %}" class="btn btn-outline-danger btn-sm py-2">
+                    <i class="bi bi-exclamation-triangle me-1"></i> Raise Grievance
+                </a>
+            {% endif %}
+            {% if contract.status == 'COMPLETED' %}
+                <a href="{% url 'review_create' contract.id %}" class="btn btn-warning fw-bold text-dark">
+                    <i class="bi bi-star-fill me-1"></i> Rate Transaction
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Contract Status Stepper -->
+    <div class="card agri-card border-0 shadow-sm p-4 mb-4">
+        <h6 class="fw-bold text-muted text-uppercase small mb-4">Contract Lifecycle Progression</h6>
+        <div class="stepper-wrapper">
+            <div class="stepper-item completed">
+                <div class="step-counter"><i class="bi bi-check-lg"></i></div>
+                <div class="small fw-bold">Proposed</div>
+            </div>
+            <div class="stepper-item {% if contract.status == 'ACTIVE' or contract.status == 'COMPLETED' %}completed{% elif contract.status == 'PROPOSED' %}active{% endif %}">
+                <div class="step-counter">{% if contract.status == 'ACTIVE' or contract.status == 'COMPLETED' %}<i class="bi bi-check-lg"></i>{% else %}2{% endif %}</div>
+                <div class="small fw-bold">Bilateral Signatures</div>
+            </div>
+            <div class="stepper-item {% if contract.status == 'ACTIVE' %}active{% elif contract.status == 'COMPLETED' %}completed{% endif %}">
+                <div class="step-counter">{% if contract.status == 'COMPLETED' %}<i class="bi bi-check-lg"></i>{% else %}3{% endif %}</div>
+                <div class="small fw-bold">Active Deliveries</div>
+            </div>
+            <div class="stepper-item {% if contract.status == 'COMPLETED' %}completed{% endif %}">
+                <div class="step-counter">{% if contract.status == 'COMPLETED' %}<i class="bi bi-check-lg"></i>{% else %}4{% endif %}</div>
+                <div class="small fw-bold">Fulfilled & Settled</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bilateral Digital Signatures Box -->
+    <div class="card agri-card border-0 shadow-sm p-4 mb-4 bg-light">
+        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+            <i class="bi bi-pen-fill text-success me-2"></i> Bilateral Electronic Signatures & Acceptance
+        </h5>
+        <div class="row g-3">
+            <!-- Farmer Signature Card -->
+            <div class="col-md-6">
+                <div class="p-3 bg-white rounded-3 border h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-bold text-muted">PRODUCER / FARMER</span>
+                        {% if contract.farmer_accepted %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> SIGNED</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> PENDING SIGNATURE</span>
+                        {% endif %}
+                    </div>
+                    <div class="fw-bold text-dark">{{ contract.farmer.get_full_name|default:contract.farmer.username }}</div>
+                    <div class="text-muted small mb-2">{{ contract.farmer.farmer_profile.farm_name|default:"Registered Farm" }}</div>
+                    {% if contract.farmer_accepted %}
+                        <div class="small text-success border-top pt-2" style="font-size: 0.75rem;">
+                            <div><strong>Timestamp:</strong> {{ contract.farmer_accepted_at|date:"d-M-Y H:i:s" }}</div>
+                            <div class="text-truncate"><strong>Digital Sig Hash:</strong> {{ contract.farmer_digital_signature }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Buyer Signature Card -->
+            <div class="col-md-6">
+                <div class="p-3 bg-white rounded-3 border h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-bold text-muted">PURCHASER / BUYER</span>
+                        {% if contract.buyer_accepted %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> SIGNED</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> PENDING SIGNATURE</span>
+                        {% endif %}
+                    </div>
+                    <div class="fw-bold text-dark">{{ contract.buyer.get_full_name|default:contract.buyer.username }}</div>
+                    <div class="text-muted small mb-2">{{ contract.buyer.buyer_profile.business_name|default:"Procurement Enterprise" }}</div>
+                    {% if contract.buyer_accepted %}
+                        <div class="small text-success border-top pt-2" style="font-size: 0.75rem;">
+                            <div><strong>Timestamp:</strong> {{ contract.buyer_accepted_at|date:"d-M-Y H:i:s" }}</div>
+                            <div class="text-truncate"><strong>Digital Sig Hash:</strong> {{ contract.buyer_digital_signature }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Current User Sign Action -->
+        {% if can_sign %}
+            <div class="mt-4 p-4 bg-white rounded-3 border-2 border-success shadow-sm" id="signatureBox">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-success px-3 py-1">ACTION REQUIRED</span>
+                    <h5 class="fw-bold text-success mb-0"><i class="bi bi-vector-pen me-1"></i> Execute Digital Contract Signature</h5>
+                </div>
+                <p class="text-muted small mb-3">
+                    As <strong>{% if is_farmer %}the Producer (Farmer){% else %}the Purchaser (Buyer){% endif %}</strong>, review all agreed specifications, delivery schedules, and price terms. Signing appends an authenticated digital signature hash and activates fulfillment.
+                </p>
+                <form method="post" action="{% url 'contract_sign' contract.id %}" id="contractSignForm">
+                    {% csrf_token %}
+                    <div class="form-check p-3 bg-light rounded-3 border mb-3">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" name="digital_consent" id="id_digital_consent" required style="width: 20px; height: 20px;">
+                        <label class="form-check-label small fw-bold text-dark ps-2 cursor-pointer" for="id_digital_consent">
+                            I solemnly affirm and certify that I have read and agree to all quality standards, delivery schedules, and payment terms of Contract #{{ contract.contract_number }}, and hereby append my authenticated electronic signature.
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg px-4 py-2 fw-bold shadow-sm" id="signSubmitBtn">
+                        <i class="bi bi-shield-check me-2"></i> Digitally Sign & Ratify Contract
+                    </button>
+                </form>
+            </div>
+        {% elif user_has_signed and not contract.is_fully_signed %}
+            <div class="mt-3 p-3 bg-warning bg-opacity-10 rounded-3 border border-warning text-dark small d-flex align-items-center gap-2">
+                <i class="bi bi-hourglass-split text-warning fs-4"></i>
+                <div>
+                    <strong>Your Digital Signature Recorded:</strong> Waiting for the counterparty ({% if is_farmer %}Buyer{% else %}Farmer{% endif %}) to complete their signature. The contract will automatically transition to <strong>ACTIVE</strong> upon bilateral signing.
+                </div>
+            </div>
+        {% elif contract.is_fully_signed %}
+            <div class="mt-3 p-3 bg-success bg-opacity-10 rounded-3 border border-success text-dark small d-flex align-items-center gap-2">
+                <i class="bi bi-patch-check-fill text-success fs-4"></i>
+                <div>
+                    <strong class="text-success">Bilateral Signatures Complete:</strong> Both the Producer and the Purchaser have affixed authenticated digital signatures. This contract is ACTIVE and legally enforceable under the Indian Contract Act.
+                </div>
+            </div>
+        {% elif request.user.is_platform_admin %}
+            <div class="mt-3 p-3 bg-light rounded-3 border text-muted small d-flex align-items-center gap-2">
+                <i class="bi bi-shield-lock text-primary fs-4"></i>
+                <div>
+                    <strong>Administrative Oversight Mode:</strong> You are viewing this contract as a platform administrator. Bilateral signature status: Farmer ({% if contract.farmer_accepted %}Signed{% else %}Pending{% endif %}) | Buyer ({% if contract.buyer_accepted %}Signed{% else %}Pending{% endif %}).
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Amendment Drawer Collapse -->
+    <div class="collapse mb-4" id="amendmentDrawer">
+        <div class="card agri-card border-0 shadow-sm p-4 bg-light">
+            <h5 class="fw-bold text-dark mb-2">Propose Formal Contract Amendment</h5>
+            <p class="text-muted small mb-3">Submit proposed schedule, price, or volume adjustments for bilateral approval.</p>
+            <form method="post" action="{% url 'contract_amend' contract.id %}">
+                {% csrf_token %}
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Adjusted Volume (kg, optional)</label>
+                        <input type="number" step="10" name="adjusted_quantity_kg" class="form-control" placeholder="Keep current: {{ contract.quantity_kg|floatformat:0 }}kg">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Adjusted Rate (₹/kg, optional)</label>
+                        <input type="number" step="0.25" name="adjusted_price_per_kg" class="form-control" placeholder="Keep current: ₹{{ contract.agreed_price_per_kg }}/kg">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small fw-bold">Detailed Reason for Amendment *</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Climatic variation, transit realignment, or yield estimate revision..." required></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-warning text-dark fw-bold px-4">Submit Amendment for Counterparty Review</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Commercial & Legal Terms Grid -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card agri-card border-0 shadow-sm p-4 h-100">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">1. Commercial Valuation</h5>
+                <table class="table table-bordered small mb-0">
+                    <tbody>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted" style="width: 40%;">Crop Commodity</td>
+                            <td class="fw-bold">{{ contract.crop_name }} ({{ contract.variety|default:"Standard" }})</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Contracted Quantity</td>
+                            <td class="fw-bold text-dark fs-6">{{ contract.quantity_kg|floatformat:0 }} Kilograms ({{ contract.quantity_kg|floatformat:0 }} kg)</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Guaranteed Fixed Rate</td>
+                            <td class="fw-bold text-success fs-6">₹ {{ contract.agreed_price_per_kg }} per kg</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Total Contract Value</td>
+                            <td class="fw-bold text-success fs-5">₹ {{ contract.total_value|intcomma }} (INR)</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Delivery Location</td>
+                            <td>{{ contract.delivery_location }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card agri-card border-0 shadow-sm p-4 h-100">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">2. Core Legal Clauses</h5>
+                <div class="accordion accordion-flush small" id="contractClauses">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold py-2 px-0" type="button" data-bs-toggle="collapse" data-bs-target="#cl1">
+                                Quality & AGMARK Specifications
+                            </button>
+                        </h2>
+                        <div id="cl1" class="accordion-collapse collapse show">
+                            <div class="accordion-body px-0 text-secondary">{{ contract.quality_specifications }}</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold py-2 px-0" type="button" data-bs-toggle="collapse" data-bs-target="#cl2">
+                                Fulfillment & Logistics Schedule
+                            </button>
+                        </h2>
+                        <div id="cl2" class="accordion-collapse collapse">
+                            <div class="accordion-body px-0 text-secondary">{{ contract.delivery_schedule }}</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold py-2 px-0" type="button" data-bs-toggle="collapse" data-bs-target="#cl3">
+                                Payment Terms & Milestone Escrow
+                            </button>
+                        </h2>
+                        <div id="cl3" class="accordion-collapse collapse">
+                            <div class="accordion-body px-0 text-secondary">{{ contract.payment_terms }}</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold py-2 px-0" type="button" data-bs-toggle="collapse" data-bs-target="#cl4">
+                                Dispute Conciliation & Arbitration
+                            </button>
+                        </h2>
+                        <div id="cl4" class="accordion-collapse collapse">
+                            <div class="accordion-body px-0 text-secondary">{{ contract.dispute_procedure }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Associated Deliveries & Payments Cards -->
+    <div class="row g-4">
+        <!-- Deliveries Fulfillment Card -->
+        <div class="col-lg-6">
+            <div class="card agri-card border-0 shadow-sm p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-truck text-warning me-2"></i> Deliveries & Fulfillment</h5>
+                    <a href="{% url 'delivery_list' %}" class="small text-success fw-bold text-decoration-none">All Deliveries</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Delivery #</th>
+                                <th>Scheduled</th>
+                                <th>Volume</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for deliv in deliveries %}
+                                <tr>
+                                    <td class="fw-bold">{{ deliv.delivery_number }}</td>
+                                    <td>{{ deliv.scheduled_date|date:"d M Y" }}</td>
+                                    <td>{{ deliv.quantity_scheduled_kg|floatformat:0 }} kg</td>
+                                    <td><span class="badge bg-secondary">{{ deliv.get_status_display }}</span></td>
+                                    <td><a href="{% url 'delivery_detail' deliv.id %}" class="btn btn-outline-success btn-sm py-0">Track</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-3 text-muted">
+                                        Deliveries are automatically generated when both parties sign the contract.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Ledger Card -->
+        <div class="col-lg-6">
+            <div class="card agri-card border-0 shadow-sm p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-credit-card text-success me-2"></i> Payment Records</h5>
+                    <a href="{% url 'payment_list' %}" class="small text-success fw-bold text-decoration-none">Payment Ledger</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>TXN #</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pay in payments %}
+                                <tr>
+                                    <td class="fw-bold">#{{ pay.id }}</td>
+                                    <td>{{ pay.get_payment_type_display }}</td>
+                                    <td class="fw-bold text-success">₹ {{ pay.amount|intcomma }}</td>
+                                    <td>
+                                        {% if pay.status == 'SUCCESS' %}
+                                            <span class="badge bg-success">Settled</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if pay.status == 'PENDING' and is_buyer %}
+                                            <a href="{% url 'payment_checkout' pay.id %}" class="btn btn-agri-gold btn-sm py-0">Pay</a>
+                                        {% else %}
+                                            <a href="{% url 'payment_detail' pay.id %}" class="btn btn-outline-secondary btn-sm py-0">Slip</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-3 text-muted">
+                                        Advance booking deposit will be generated upon bilateral contract signing.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

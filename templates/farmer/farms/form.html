@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">{{ action }}</h3>
+                        <p class="text-muted small mb-0">Record plot details for contract farming verification</p>
+                    </div>
+                    <a href="{% url 'farm_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Farms
+                    </a>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Farm Plot Name *</label>
+                            <input type="text" name="farm_name" class="form-control" placeholder="e.g. Green Valley Plot A" required value="{{ form.farm_name.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Area (Acres) *</label>
+                            <input type="number" step="0.1" name="area_acres" class="form-control" placeholder="e.g. 10.0" required value="{{ form.area_acres.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Village *</label>
+                            <input type="text" name="village" class="form-control" placeholder="Village name" required value="{{ form.village.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">District *</label>
+                            <input type="text" name="district" class="form-control" placeholder="District" required value="{{ form.district.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">State *</label>
+                            <input type="text" name="state" class="form-control" placeholder="State" required value="{{ form.state.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Postal Code</label>
+                            <input type="text" name="postal_code" class="form-control" placeholder="PIN code" value="{{ form.postal_code.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Soil Classification</label>
+                            <input type="text" name="soil_type" class="form-control" placeholder="e.g. Black Cotton, Sandy Loam" value="{{ form.soil_type.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Irrigation Source</label>
+                            <input type="text" name="irrigation_source" class="form-control" placeholder="e.g. Solar Tube Well, Canal" value="{{ form.irrigation_source.value|default:'' }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Khasra / Land Record Survey Number</label>
+                            <input type="text" name="survey_number" class="form-control" placeholder="Official revenue department number" value="{{ form.survey_number.value|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-agri px-4 fw-bold">Save Farm Information</button>
+                        <a href="{% url 'farm_list' %}" class="btn btn-light border px-4">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

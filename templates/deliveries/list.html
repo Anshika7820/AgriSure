@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Deliveries & Logistics | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Deliveries & Consignment Tracking</h2>
+            <p class="text-muted small mb-0">Monitor scheduled harvest batches, transport dispatch slips, and weighbridge confirmations.</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{% url 'contract_list' %}" class="btn btn-outline-success btn-sm">View Contracts</a>
+        </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="d-flex gap-2 overflow-auto pb-2 mb-4">
+        <a href="{% url 'delivery_list' %}" class="btn btn-sm {% if not current_status %}btn-dark{% else %}btn-light border{% endif %} rounded-pill px-3">
+            All Deliveries
+        </a>
+        <a href="?status=SCHEDULED" class="btn btn-sm {% if current_status == 'SCHEDULED' %}btn-secondary{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Scheduled
+        </a>
+        <a href="?status=IN_TRANSIT" class="btn btn-sm {% if current_status == 'IN_TRANSIT' %}btn-warning text-dark{% else %}btn-light border{% endif %} rounded-pill px-3">
+            In Transit
+        </a>
+        <a href="?status=CONFIRMED" class="btn btn-sm {% if current_status == 'CONFIRMED' %}btn-success{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Confirmed & Weighed
+        </a>
+        <a href="?status=REJECTED" class="btn btn-sm {% if current_status == 'REJECTED' %}btn-danger{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Quality Rejected
+        </a>
+    </div>
+
+    <div class="card agri-card border-0 shadow-sm p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Consignment #</th>
+                        <th>Contract Reference</th>
+                        <th>Crop</th>
+                        <th>Producer / Dispatcher</th>
+                        <th>Purchaser / Receiver</th>
+                        <th>Scheduled Date</th>
+                        <th>Scheduled Volume</th>
+                        <th>Confirmed Received</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for deliv in deliveries %}
+                        <tr>
+                            <td class="fw-bold">
+                                <a href="{% url 'delivery_detail' deliv.id %}" class="text-decoration-none text-dark">
+                                    {{ deliv.delivery_number }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'contract_detail' deliv.contract.id %}" class="text-success text-decoration-none fw-semibold">
+                                    {{ deliv.contract.contract_number }}
+                                </a>
+                            </td>
+                            <td>{{ deliv.contract.crop_name }}</td>
+                            <td>{{ deliv.contract.farmer.get_full_name|default:deliv.contract.farmer.username }}</td>
+                            <td>{{ deliv.contract.buyer.get_full_name|default:deliv.contract.buyer.username }}</td>
+                            <td>{{ deliv.scheduled_date|date:"d M Y" }}</td>
+                            <td class="fw-bold">{{ deliv.quantity_scheduled_kg|floatformat:0 }} kg</td>
+                            <td class="fw-bold text-success">
+                                {% if deliv.quantity_received_kg %}
+                                    {{ deliv.quantity_received_kg|floatformat:0 }} kg
+                                {% else %}
+                                    <span class="text-muted fw-normal">Pending Scale</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if deliv.status == 'CONFIRMED' %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                {% elif deliv.status == 'IN_TRANSIT' %}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-truck"></i> In Transit</span>
+                                {% elif deliv.status == 'SCHEDULED' %}
+                                    <span class="badge bg-secondary">Scheduled</span>
+                                {% elif deliv.status == 'REJECTED' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% else %}
+                                    <span class="badge bg-info text-dark">{{ deliv.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'delivery_detail' deliv.id %}" class="btn btn-agri btn-sm py-1 px-3 fw-semibold">
+                                    Manage / Track
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="10" class="text-center py-5 text-muted">
+                                <i class="bi bi-truck fs-2 d-block mb-2 text-muted"></i>
+                                No delivery consignments scheduled yet. Signing contracts automatically provisions delivery schedules.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

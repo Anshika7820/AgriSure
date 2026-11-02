@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dispute Conciliation & Grievances | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Dispute Conciliation Tribunal</h2>
+            <p class="text-muted small mb-0">Platform mediation and administrative arbitration for quality discrepancies, fulfillment delays, and payment disputes.</p>
+        </div>
+        <a href="{% url 'contract_list' %}" class="btn btn-outline-secondary btn-sm">View Contracts</a>
+    </div>
+
+    <div class="card agri-card border-0 shadow-sm p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Grievance #</th>
+                        <th>Contract Reference</th>
+                        <th>Raised By</th>
+                        <th>Dispute Classification</th>
+                        <th>Filed Date</th>
+                        <th>Arbitration Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for disp in disputes %}
+                        <tr>
+                            <td class="fw-bold">#{{ disp.id }}</td>
+                            <td>
+                                <a href="{% url 'contract_detail' disp.contract.id %}" class="text-success fw-bold text-decoration-none">
+                                    {{ disp.contract.contract_number }}
+                                </a>
+                                <div class="text-muted small">{{ disp.contract.crop_name }}</div>
+                            </td>
+                            <td>{{ disp.raised_by.get_full_name|default:disp.raised_by.username }} ({{ disp.raised_by.get_role_display }})</td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ disp.get_reason_display }}</span>
+                            </td>
+                            <td>{{ disp.created_at|date:"d M Y" }}</td>
+                            <td>
+                                {% if disp.status == 'RESOLVED' %}
+                                    <span class="badge bg-success">Resolved</span>
+                                {% elif disp.status == 'OPEN' %}
+                                    <span class="badge bg-danger">Open Grievance</span>
+                                {% elif disp.status == 'UNDER_REVIEW' %}
+                                    <span class="badge bg-warning text-dark">Under Mediation</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ disp.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'dispute_detail' disp.id %}" class="btn btn-outline-danger btn-sm py-1 px-3">
+                                    Case File
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-shield-check fs-2 text-success d-block mb-2"></i>
+                                No open disputes or grievances on record. AgriSure maintains high fulfillment compliance.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

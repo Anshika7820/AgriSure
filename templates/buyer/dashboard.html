@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Buyer Procurement Command Center | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold">Buyer Workspace</span>
+                {% if user.is_verified %}
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="bi bi-patch-check-fill"></i> Verified Enterprise</span>
+                {% else %}
+                    <a href="{% url 'upload_verification' %}" class="badge bg-warning text-dark text-decoration-none"><i class="bi bi-exclamation-triangle"></i> Submit Corporate KYC</a>
+                {% endif %}
+            </div>
+            <h2 class="fw-bold text-dark mt-1 mb-0">{{ user.buyer_profile.business_name|default:user.username }}</h2>
+            <p class="text-muted small mb-0">{{ user.buyer_profile.get_business_type_display }} &bull; {{ user.buyer_profile.district }}, {{ user.buyer_profile.state }}</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+            <a href="{% url 'marketplace' %}" class="btn btn-agri fw-semibold">
+                <i class="bi bi-search me-1"></i> Browse Produce
+            </a>
+            <a href="{% url 'buyer_offers' %}" class="btn btn-outline-warning text-dark fw-semibold">
+                <i class="bi bi-chat-left-text me-1"></i> My Active Offers
+            </a>
+            <a href="{% url 'buyer_reports' %}" class="btn btn-light border fw-semibold">
+                <i class="bi bi-pie-chart me-1"></i> Procurement Spend
+            </a>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-green">
+                    <i class="bi bi-shop"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Available Lots</div>
+                    <div class="stat-value text-success">{{ available_crops_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-gold">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Pending Deals</div>
+                    <div class="stat-value text-warning">{{ pending_offers_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-blue">
+                    <i class="bi bi-file-earmark-check"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Active Contracts</div>
+                    <div class="stat-value text-primary">{{ active_contracts_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-purple">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Upcoming Arrivals</div>
+                    <div class="stat-value text-purple">{{ upcoming_arrivals }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="row g-2 mb-4">
+        <div class="col-6 col-md-3">
+            <a href="{% url 'marketplace' %}" class="card p-3 border-0 shadow-sm text-decoration-none text-dark agri-card-hover text-center">
+                <i class="bi bi-search text-success fs-3 mb-1"></i>
+                <div class="fw-bold small">Explore Crops</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'buyer_offers' %}" class="card p-3 border-0 shadow-sm text-decoration-none text-dark agri-card-hover text-center">
+                <i class="bi bi-chat-quote-fill text-warning fs-3 mb-1"></i>
+                <div class="fw-bold small">Submitted Proposals</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'delivery_list' %}" class="card p-3 border-0 shadow-sm text-decoration-none text-dark agri-card-hover text-center">
+                <i class="bi bi-box-seam-fill text-primary fs-3 mb-1"></i>
+                <div class="fw-bold small">Track Arrivals</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'payment_list' %}" class="card p-3 border-0 shadow-sm text-decoration-none text-dark agri-card-hover text-center">
+                <i class="bi bi-credit-card-2-front text-info fs-3 mb-1"></i>
+                <div class="fw-bold small">Settlements & Escrow</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Two Tables -->
+    <div class="row g-4">
+        <!-- Recent Offers -->
+        <div class="col-lg-6">
+            <div class="card agri-card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-chat-left-dots text-warning me-2"></i> My Recent Offers</h5>
+                    <a href="{% url 'buyer_offers' %}" class="small text-success fw-bold text-decoration-none">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>Producer</th>
+                                    <th>Proposed Rate</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for offer in recent_offers %}
+                                    <tr>
+                                        <td class="fw-bold">{{ offer.crop_listing.crop_name }}</td>
+                                        <td>{{ offer.crop_listing.farmer.get_full_name|default:offer.crop_listing.farmer.username }}</td>
+                                        <td>₹ {{ offer.proposed_price_per_kg }}/kg <div class="text-muted" style="font-size: 0.72rem;">{{ offer.quantity_kg|floatformat:0 }} kg</div></td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">{{ offer.get_status_display }}</span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'offer_detail' offer.id %}" class="btn btn-outline-success btn-sm py-0">Details</a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            No offers submitted yet. <a href="{% url 'marketplace' %}">Browse available crops</a> to make offers.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Contracts -->
+        <div class="col-lg-6">
+            <div class="card agri-card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-file-earmark-text text-success me-2"></i> Procurement Contracts</h5>
+                    <a href="{% url 'contract_list' %}" class="small text-success fw-bold text-decoration-none">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Contract #</th>
+                                    <th>Crop & Volume</th>
+                                    <th>Total Value</th>
+                                    <th>Status</th>
+                                    <th>PDF</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contract in recent_contracts %}
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <a href="{% url 'contract_detail' contract.id %}" class="text-decoration-none text-success">
+                                                {{ contract.contract_number }}
+                                            </a>
+                                        </td>
+                                        <td>{{ contract.crop_name }} <div class="text-muted" style="font-size: 0.72rem;">{{ contract.quantity_kg|floatformat:0 }} kg</div></td>
+                                        <td class="fw-bold text-dark">₹ {{ contract.total_value|intcomma }}</td>
+                                        <td>
+                                            <span class="badge badge-agri-{{ contract.status|lower }}">{{ contract.get_status_display }}</span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'contract_download_pdf' contract.id %}" class="btn btn-light border btn-sm py-0 text-danger">
+                                                <i class="bi bi-file-earmark-pdf"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            No contracts executed yet. Accepted offers will establish agreements here.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

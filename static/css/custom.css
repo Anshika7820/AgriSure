@@ -1,0 +1,355 @@
+/* AgriSure Custom Design System */
+:root {
+  --agri-primary: #0f5132;
+  --agri-primary-light: #198754;
+  --agri-primary-hover: #0b3d26;
+  --agri-accent: #f59e0b;
+  --agri-accent-light: #fef3c7;
+  --agri-dark: #0f172a;
+  --agri-slate: #334155;
+  --agri-muted: #64748b;
+  --agri-bg: #f8fafc;
+  --agri-card-bg: #ffffff;
+  --agri-border: #e2e8f0;
+  --agri-radius: 14px;
+  --agri-shadow: 0 4px 20px -2px rgba(15, 81, 50, 0.08);
+  --agri-shadow-lg: 0 10px 30px -4px rgba(15, 81, 50, 0.12);
+}
+
+body {
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--agri-bg);
+  color: var(--agri-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar */
+.navbar-agri {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--agri-border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+}
+
+.navbar-brand-img {
+  height: 44px;
+  width: auto;
+  border-radius: 8px;
+}
+
+.brand-text {
+  font-weight: 800;
+  font-size: 1.45rem;
+  letter-spacing: -0.5px;
+  color: var(--agri-primary);
+}
+
+.brand-tagline {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--agri-accent);
+  display: block;
+  margin-top: -4px;
+}
+
+/* Buttons */
+.btn-agri {
+  background: linear-gradient(135deg, var(--agri-primary-light), var(--agri-primary));
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.4rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.2);
+}
+
+.btn-agri:hover {
+  background: linear-gradient(135deg, var(--agri-primary), var(--agri-primary-hover));
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(25, 135, 84, 0.3);
+}
+
+.btn-agri-outline {
+  border: 2px solid var(--agri-primary);
+  color: var(--agri-primary);
+  background: transparent;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.55rem 1.35rem;
+  transition: all 0.25s ease;
+}
+
+.btn-agri-outline:hover {
+  background: var(--agri-primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.btn-agri-gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+}
+
+.btn-agri-gold:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Cards */
+.agri-card {
+  background: var(--agri-card-bg);
+  border: 1px solid var(--agri-border);
+  border-radius: var(--agri-radius);
+  box-shadow: var(--agri-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.agri-card:hover {
+  box-shadow: var(--agri-shadow-lg);
+}
+
+.agri-card-hover:hover {
+  transform: translateY(-4px);
+}
+
+/* Stat Cards */
+.stat-card {
+  border-radius: var(--agri-radius);
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid var(--agri-border);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--agri-shadow);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.stat-icon-wrapper {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.stat-icon-green { background: #d1e7dd; color: #0f5132; }
+.stat-icon-gold { background: #fef3c7; color: #b45309; }
+.stat-icon-blue { background: #e0f2fe; color: #0369a1; }
+.stat-icon-purple { background: #f3e8ff; color: #7e22ce; }
+.stat-icon-red { background: #fee2e2; color: #b91c1c; }
+
+.stat-title {
+  font-size: 0.85rem;
+  color: var(--agri-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.2rem;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--agri-dark);
+  line-height: 1.2;
+}
+
+/* Sidebar */
+.agri-sidebar {
+  background: #fff;
+  border-right: 1px solid var(--agri-border);
+  min-height: calc(100vh - 72px);
+  padding: 1.5rem 1rem;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1.1rem;
+  color: var(--agri-slate);
+  font-weight: 500;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-bottom: 0.35rem;
+}
+
+.sidebar-nav-item:hover {
+  background: #f1f5f9;
+  color: var(--agri-primary);
+  transform: translateX(3px);
+}
+
+.sidebar-nav-item.active {
+  background: linear-gradient(135deg, rgba(25, 135, 84, 0.12), rgba(15, 81, 50, 0.15));
+  color: var(--agri-primary);
+  font-weight: 700;
+}
+
+.sidebar-nav-item i {
+  font-size: 1.2rem;
+}
+
+/* Badges */
+.badge-agri-active { background: #d1e7dd; color: #0f5132; font-weight: 600; }
+.badge-agri-proposed { background: #fef3c7; color: #92400e; font-weight: 600; }
+.badge-agri-completed { background: #e0e7ff; color: #3730a3; font-weight: 600; }
+.badge-agri-disputed { background: #fee2e2; color: #991b1b; font-weight: 600; }
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #0a3d24 0%, #0f5132 50%, #166534 100%);
+  color: #fff;
+  padding: 5rem 0 6rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.15) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.hero-title {
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -1px;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: #e2e8f0;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Crop Card */
+.crop-card-img {
+  height: 200px;
+  object-fit: cover;
+  border-top-left-radius: var(--agri-radius);
+  border-top-right-radius: var(--agri-radius);
+  width: 100%;
+}
+
+.crop-card-price {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--agri-primary);
+}
+
+/* Timeline Stepper */
+.stepper-wrapper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.stepper-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.stepper-item {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.step-counter {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
+
+.stepper-item.completed .step-counter {
+  background: var(--agri-primary);
+  border-color: var(--agri-primary);
+  color: #fff;
+}
+
+.stepper-item.active .step-counter {
+  border-color: var(--agri-accent);
+  background: var(--agri-accent);
+  color: #fff;
+}
+
+/* Negotiation Chat Box */
+.chat-container {
+  max-height: 480px;
+  overflow-y: auto;
+  padding: 1.25rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid var(--agri-border);
+}
+
+.chat-bubble {
+  max-width: 78%;
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.chat-bubble-me {
+  background: #d1e7dd;
+  color: #0f5132;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble-other {
+  background: #ffffff;
+  color: var(--agri-dark);
+  margin-right: auto;
+  border: 1px solid var(--agri-border);
+  border-bottom-left-radius: 4px;
+}
+
+/* Toast Container */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1090;
+}

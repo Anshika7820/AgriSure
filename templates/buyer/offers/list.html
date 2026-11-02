@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}My Submitted Offers | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">My Submitted Offers</h2>
+            <p class="text-muted small mb-0">Track commercial proposals, negotiate rates, and execute contracts with producers.</p>
+        </div>
+        <a href="{% url 'marketplace' %}" class="btn btn-agri">
+            <i class="bi bi-search me-1"></i> Discover More Crops
+        </a>
+    </div>
+
+    <div class="card agri-card border-0 shadow-sm p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Offer #</th>
+                        <th>Crop</th>
+                        <th>Farmer Origin</th>
+                        <th>Requested Volume</th>
+                        <th>Offered Rate</th>
+                        <th>Total Value</th>
+                        <th>Target Delivery</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for offer in offers %}
+                        <tr>
+                            <td class="fw-bold">#{{ offer.id }}</td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ offer.crop_listing.crop_name }}</div>
+                                <div class="text-muted small">{{ offer.crop_listing.variety|default:"Standard" }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ offer.crop_listing.farmer.get_full_name|default:offer.crop_listing.farmer.username }}</div>
+                                <div class="text-muted small">{{ offer.crop_listing.farm.district }}, {{ offer.crop_listing.farm.state }}</div>
+                            </td>
+                            <td class="fw-bold">{{ offer.quantity_kg|floatformat:0 }} kg</td>
+                            <td class="fw-bold text-success fs-6">₹ {{ offer.proposed_price_per_kg }}<span class="fs-7 fw-normal text-muted">/kg</span></td>
+                            <td class="fw-bold text-dark">₹ {{ offer.total_offer_value|intcomma }}</td>
+                            <td>{{ offer.delivery_date|date:"d M Y" }}</td>
+                            <td>
+                                {% if offer.status == 'PENDING' %}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Awaiting Farmer</span>
+                                {% elif offer.status == 'COUNTERED' %}
+                                    <span class="badge bg-info text-dark"><i class="bi bi-arrow-repeat"></i> Counter-Offer Active</span>
+                                {% elif offer.status == 'ACCEPTED' %}
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Agreed / Contracted</span>
+                                {% elif offer.status == 'REJECTED' %}
+                                    <span class="badge bg-danger">Declined</span>
+                                {% elif offer.status == 'WITHDRAWN' %}
+                                    <span class="badge bg-secondary">Withdrawn</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ offer.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'offer_detail' offer.id %}" class="btn btn-outline-success btn-sm py-1 px-3 fw-semibold">
+                                    Negotiate / View
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <i class="bi bi-chat-quote fs-2 d-block mb-2 text-muted"></i>
+                                You haven't made any offers yet. <a href="{% url 'marketplace' %}">Browse available crop listings</a> to start procurement.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

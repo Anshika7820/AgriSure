@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Farmer Registration | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="stat-icon-wrapper stat-icon-green">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">Farmer Enrollment</h3>
+                        <p class="text-muted small mb-0">Join AgriSure to secure verified agricultural purchasers before harvesting.</p>
+                    </div>
+                </div>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger small">
+                        <strong>Please correct the following errors:</strong>
+                        <ul class="mb-0 mt-1">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'register_farmer' %}">
+                    {% csrf_token %}
+                    <h5 class="fw-bold text-success mb-3"><i class="bi bi-person-circle me-1"></i> Account Credentials</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Full Name *</label>
+                            <input type="text" name="first_name" class="form-control" placeholder="e.g. Gurpreet Singh" required value="{{ form.first_name.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Username *</label>
+                            <input type="text" name="username" class="form-control" placeholder="Choose a unique username" required value="{{ form.username.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Email Address *</label>
+                            <input type="email" name="email" class="form-control" placeholder="name@example.com" required value="{{ form.email.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Mobile Phone *</label>
+                            <input type="text" name="phone" class="form-control" placeholder="+91 98765 43210" required value="{{ form.phone.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Password *</label>
+                            <input type="password" name="password" class="form-control" placeholder="Min. 6 characters" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Confirm Password *</label>
+                            <input type="password" name="confirm_password" class="form-control" placeholder="Re-type password" required>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-success mb-3"><i class="bi bi-geo-alt-fill me-1"></i> Farm Location & Capacity</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Village / Gram Panchayat *</label>
+                            <input type="text" name="village" class="form-control" placeholder="e.g. Khanna" required value="{{ form.village.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">District *</label>
+                            <input type="text" name="district" class="form-control" placeholder="e.g. Ludhiana" required value="{{ form.district.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">State *</label>
+                            <input type="text" name="state" class="form-control" placeholder="e.g. Punjab" required value="{{ form.state.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Total Cultivable Area (Acres) *</label>
+                            <input type="number" step="0.1" name="farm_area_acres" class="form-control" placeholder="e.g. 15.5" required value="{{ form.farm_area_acres.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Farming Experience (Years) *</label>
+                            <input type="number" name="farming_experience" class="form-control" placeholder="e.g. 12" required value="{{ form.farming_experience.value|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" name="agree_terms" id="agree_terms" required>
+                        <label class="form-check-label small text-muted" for="agree_terms">
+                            I declare that my farm information is accurate and agree to participate in AgriSure's digital contract farming conciliation framework.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-agri w-100 py-3 fw-bold fs-6">
+                        Complete Farmer Registration
+                    </button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <span class="small text-muted">Already registered?</span>
+                    <a href="{% url 'login' %}" class="small text-success fw-bold text-decoration-none ms-1">Sign In Here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

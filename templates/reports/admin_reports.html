@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Platform Governance Analytics | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Platform Governance & Macro Metrics</h2>
+            <p class="text-muted small mb-0">High-level institutional statistics across participants, contracts, and financial volumes.</p>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">Admin Workspace</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-green">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Total Users</div>
+                    <div class="stat-value">{{ total_users }} <span class="fs-6 text-muted fw-normal">({{ total_farmers }} Farmers, {{ total_buyers }} Buyers)</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-blue">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Total Contracts Formulated</div>
+                    <div class="stat-value text-primary">{{ total_contracts }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-purple">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Platform Contract Gross (INR)</div>
+                    <div class="stat-value text-success">₹ {{ total_volume_inr|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-gold">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Disputes Resolved Rate</div>
+                    <div class="stat-value text-warning">{{ dispute_resolved }} / {{ dispute_count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

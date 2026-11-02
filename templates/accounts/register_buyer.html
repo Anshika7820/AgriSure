@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Buyer Registration | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="stat-icon-wrapper stat-icon-gold">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">Buyer & Institutional Procurement Enrollment</h3>
+                        <p class="text-muted small mb-0">Direct procurement from verified farms with legal digital contracts and escrow fulfillment.</p>
+                    </div>
+                </div>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger small">
+                        <strong>Please correct the following errors:</strong>
+                        <ul class="mb-0 mt-1">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'register_buyer' %}">
+                    {% csrf_token %}
+                    <h5 class="fw-bold text-warning mb-3"><i class="bi bi-person-circle me-1"></i> Authorized Contact Details</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Authorized Person Name *</label>
+                            <input type="text" name="first_name" class="form-control" placeholder="e.g. Rajesh Khurana" required value="{{ form.first_name.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Username *</label>
+                            <input type="text" name="username" class="form-control" placeholder="Choose username" required value="{{ form.username.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Official Business Email *</label>
+                            <input type="email" name="email" class="form-control" placeholder="procurement@company.com" required value="{{ form.email.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Business Phone *</label>
+                            <input type="text" name="phone" class="form-control" placeholder="+91 98765 00000" required value="{{ form.phone.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Password *</label>
+                            <input type="password" name="password" class="form-control" placeholder="Min. 6 characters" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Confirm Password *</label>
+                            <input type="password" name="confirm_password" class="form-control" placeholder="Re-type password" required>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-warning mb-3"><i class="bi bi-briefcase-fill me-1"></i> Business Profile & Entity Details</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Entity / Company Legal Name *</label>
+                            <input type="text" name="business_name" class="form-control" placeholder="e.g. Apex Agri Foods Pvt. Ltd." required value="{{ form.business_name.value|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Business Type *</label>
+                            <select name="business_type" class="form-select" required>
+                                <option value="WHOLESALER">Wholesaler / Grain Trader</option>
+                                <option value="FOOD_PROCESSOR">Food Processing Company</option>
+                                <option value="EXPORTER">Agri-Export House</option>
+                                <option value="RETAILER">Retail Chain / Supermarket</option>
+                                <option value="OTHER">Institutional Buyer / Other</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Registered Office / Warehouse Address *</label>
+                            <textarea name="address" class="form-control" rows="2" placeholder="Full postal address" required>{{ form.address.value|default:'' }}</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">District *</label>
+                            <input type="text" name="district" class="form-control" placeholder="e.g. Indore" required value="{{ form.district.value|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">State *</label>
+                            <input type="text" name="state" class="form-control" placeholder="e.g. Madhya Pradesh" required value="{{ form.state.value|default:'' }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">GSTIN / Corporate Identification Number (CIN) / FSSAI License *</label>
+                            <input type="text" name="registration_number" class="form-control" placeholder="e.g. 23AABCA1234D1Z5" required value="{{ form.registration_number.value|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" name="agree_terms" id="agree_terms_buyer" required>
+                        <label class="form-check-label small text-muted" for="agree_terms_buyer">
+                            I accept the AgriSure Institutional Buyer Code of Conduct, escrow settlement rules, and digital contract enforcement protocols.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-agri-gold w-100 py-3 fw-bold fs-6">
+                        Complete Buyer Registration
+                    </button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <span class="small text-muted">Already registered?</span>
+                    <a href="{% url 'login' %}" class="small text-warning fw-bold text-decoration-none ms-1">Sign In Here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Farmer Command Dashboard | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Dashboard Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-success px-3 py-1 rounded-pill">Farmer Workspace</span>
+                {% if user.is_verified %}
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="bi bi-patch-check-fill"></i> Verified Farmer</span>
+                {% else %}
+                    <a href="{% url 'upload_verification' %}" class="badge bg-warning text-dark text-decoration-none"><i class="bi bi-exclamation-triangle"></i> Complete Land Verification</a>
+                {% endif %}
+            </div>
+            <h2 class="fw-bold text-dark mt-1 mb-0">Welcome, {{ user.get_full_name|default:user.username }}</h2>
+            <p class="text-muted small mb-0">{{ user.farmer_profile.farm_name|default:"Registered Farm" }} &bull; {{ user.farmer_profile.district }}, {{ user.farmer_profile.state }}</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+            <a href="{% url 'crop_create' %}" class="btn btn-agri fw-semibold">
+                <i class="bi bi-plus-circle me-1"></i> List New Crop
+            </a>
+            <a href="{% url 'farm_create' %}" class="btn btn-outline-success fw-semibold">
+                <i class="bi bi-geo-alt me-1"></i> Add Farm
+            </a>
+            <a href="{% url 'farmer_reports' %}" class="btn btn-light border fw-semibold">
+                <i class="bi bi-graph-up me-1"></i> Analytics
+            </a>
+        </div>
+    </div>
+
+    <!-- Stat Cards Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-green">
+                    <i class="bi bi-flower1"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Active Crop Lots</div>
+                    <div class="stat-value">{{ active_listings_count }} <span class="text-muted fs-6 fw-normal">/ {{ total_listings_count }}</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-gold">
+                    <i class="bi bi-chat-left-dots"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Offers Pending</div>
+                    <div class="stat-value text-warning">{{ pending_offers_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-blue">
+                    <i class="bi bi-file-earmark-check"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Active Contracts</div>
+                    <div class="stat-value text-primary">{{ active_contracts_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-purple">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Settled Earnings</div>
+                    <div class="stat-value text-success">₹ {{ total_earnings|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Shortcuts -->
+    <div class="row g-2 mb-4">
+        <div class="col-6 col-md-3">
+            <a href="{% url 'my_crops' %}" class="card p-3 border-0 shadow-sm text-decoration-none text-dark agri-card-hover text-center">
+                <i class="bi bi-basket2-fill text-success fs-3 mb-1"></i>
+                <div class="fw-bold small">My Crop Listings</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'farmer_offers' %}" class="card p-3 border-0 shadow-sm text-decoration-none text-dark agri-card-hover text-center">
+                <i class="bi bi-inbox-fill text-warning fs-3 mb-1"></i>
+                <div class="fw-bold small">Received Offers</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'delivery_list' %}" class="card p-3 border-0 shadow-sm text-decoration-none text-dark agri-card-hover text-center">
+                <i class="bi bi-truck text-primary fs-3 mb-1"></i>
+                <div class="fw-bold small">Delivery Schedules</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="{% url 'payment_list' %}" class="card p-3 border-0 shadow-sm text-decoration-none text-dark agri-card-hover text-center">
+                <i class="bi bi-receipt text-info fs-3 mb-1"></i>
+                <div class="fw-bold small">Payment Slips</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Two-Column Tables Section -->
+    <div class="row g-4">
+        <!-- Recent Received Offers -->
+        <div class="col-lg-6">
+            <div class="card agri-card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-inbox text-warning me-2"></i> Recent Buyer Offers</h5>
+                    <a href="{% url 'farmer_offers' %}" class="small text-success fw-bold text-decoration-none">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>Buyer</th>
+                                    <th>Offer Rate</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for offer in recent_offers %}
+                                    <tr>
+                                        <td class="fw-bold">{{ offer.crop_listing.crop_name }}</td>
+                                        <td>{{ offer.buyer.get_full_name|default:offer.buyer.username }}</td>
+                                        <td>₹ {{ offer.proposed_price_per_kg }}/kg <div class="text-muted" style="font-size: 0.72rem;">{{ offer.quantity_kg|floatformat:0 }} kg</div></td>
+                                        <td>
+                                            {% if offer.status == 'PENDING' %}
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            {% elif offer.status == 'ACCEPTED' %}
+                                                <span class="badge bg-success">Accepted</span>
+                                            {% elif offer.status == 'COUNTERED' %}
+                                                <span class="badge bg-info text-dark">Countered</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ offer.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'offer_detail' offer.id %}" class="btn btn-outline-success btn-sm py-0">Review</a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            No offers received yet. <a href="{% url 'crop_create' %}">List more crops</a> to attract buyers.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Executed Contracts -->
+        <div class="col-lg-6">
+            <div class="card agri-card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-file-earmark-text text-success me-2"></i> Contracts & Agreements</h5>
+                    <a href="{% url 'contract_list' %}" class="small text-success fw-bold text-decoration-none">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Contract #</th>
+                                    <th>Crop & Volume</th>
+                                    <th>Total Value</th>
+                                    <th>Status</th>
+                                    <th>Document</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contract in recent_contracts %}
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <a href="{% url 'contract_detail' contract.id %}" class="text-decoration-none text-success">
+                                                {{ contract.contract_number }}
+                                            </a>
+                                        </td>
+                                        <td>{{ contract.crop_name }} <div class="text-muted" style="font-size: 0.72rem;">{{ contract.quantity_kg|floatformat:0 }} kg</div></td>
+                                        <td class="fw-bold text-dark">₹ {{ contract.total_value|intcomma }}</td>
+                                        <td>
+                                            <span class="badge badge-agri-{{ contract.status|lower }}">{{ contract.get_status_display }}</span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'contract_download_pdf' contract.id %}" class="btn btn-light border btn-sm py-0 text-danger">
+                                                <i class="bi bi-file-earmark-pdf"></i> PDF
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            No contracts executed yet. Accepted offers will automatically create agreements here.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

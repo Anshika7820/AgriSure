@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Submit Purchase Offer | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">Submit Purchase Offer</h3>
+                        <p class="text-muted small mb-0">Formulate commercial purchase terms for {{ crop.crop_name }}</p>
+                    </div>
+                    <a href="{% url 'crop_detail' crop.id %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Listing
+                    </a>
+                </div>
+
+                <!-- Crop Summary Info -->
+                <div class="p-3 bg-light rounded-3 mb-4 d-flex justify-content-between align-items-center border">
+                    <div>
+                        <div class="fw-bold text-dark">{{ crop.crop_name }} ({{ crop.variety|default:"Standard" }})</div>
+                        <div class="small text-muted">Producer: {{ crop.farmer.get_full_name|default:crop.farmer.username }} &bull; {{ crop.farm.district }}, {{ crop.farm.state }}</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="small text-muted">Asking: ₹{{ crop.expected_price_per_kg }}/kg</div>
+                        <div class="small fw-bold text-success">Available: {{ crop.available_quantity_kg|floatformat:0 }} kg</div>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Purchase Volume Required (kg) *</label>
+                            <input type="number" step="10" name="quantity_kg" id="id_quantity_kg" class="form-control" max="{{ crop.available_quantity_kg }}" required value="{{ form.quantity_kg.value|default:'' }}">
+                            <div class="form-text small">Max available for contract: {{ crop.available_quantity_kg|floatformat:0 }} kg</div>
+                            {% for error in form.quantity_kg.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Proposed Price Rate (₹/kg) *</label>
+                            <input type="number" step="0.25" name="proposed_price_per_kg" id="id_proposed_price_per_kg" class="form-control" required value="{{ form.proposed_price_per_kg.value|default:'' }}">
+                            <div class="form-text small">Farmer asking benchmark: ₹{{ crop.expected_price_per_kg }}/kg</div>
+                            {% for error in form.proposed_price_per_kg.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <!-- Real-time Total Display Box -->
+                        <div class="col-12">
+                            <div class="p-3 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 d-flex justify-content-between align-items-center">
+                                <span class="small text-success fw-bold"><i class="bi bi-cash-coin me-1"></i> Total Proposed Contract Value:</span>
+                                <span class="fw-bold text-success fs-4" id="calc-total-display">₹ 0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Desired Delivery Fulfillment Date *</label>
+                            {{ form.delivery_date }}
+                            {% for error in form.delivery_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Designated Delivery Destination *</label>
+                            <input type="text" name="delivery_location" class="form-control" placeholder="e.g. Apex Central Warehouse, Indore" required value="{{ form.delivery_location.value|default:'' }}">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Quality & Packaging Specifications</label>
+                            <textarea name="quality_specifications" class="form-control" rows="2" placeholder="e.g. Moisture <= 11%, 50kg new HDPE gunny bags, zero foreign matter...">{{ form.quality_specifications.value|default:'' }}</textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Introductory Note to Producer</label>
+                            <textarea name="message" class="form-control" rows="3" placeholder="State your company requirement, payment reliability, and delivery timeline expectations...">{{ form.message.value|default:'' }}</textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-agri-gold w-100 py-3 fw-bold fs-6">
+                        <i class="bi bi-send-fill me-2"></i> Transmit Formal Offer to Farmer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

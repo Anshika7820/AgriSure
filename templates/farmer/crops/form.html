@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">{{ action }}</h3>
+                        <p class="text-muted small mb-0">Publish crop lot details to attract pre-harvest contracts.</p>
+                    </div>
+                    <a href="{% url 'my_crops' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Crops
+                    </a>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Select Farm Origin *</label>
+                            {{ form.farm }}
+                            {% for error in form.farm.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Crop Category *</label>
+                            {{ form.category }}
+                            {% for error in form.category.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Crop Commodity Name *</label>
+                            <input type="text" name="crop_name" class="form-control" placeholder="e.g. Sharbati Wheat, Basmati 1121" required value="{{ form.crop_name.value|default:'' }}">
+                            {% for error in form.crop_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Variety</label>
+                            <input type="text" name="variety" class="form-control" placeholder="e.g. PBW-343" value="{{ form.variety.value|default:'' }}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Total Expected Volume (kg) *</label>
+                            <input type="number" step="10" name="total_quantity_kg" id="id_total_quantity_kg" class="form-control" placeholder="e.g. 5000" required value="{{ form.total_quantity_kg.value|default:'' }}">
+                            {% for error in form.total_quantity_kg.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Base Asking Price (₹/kg) *</label>
+                            <input type="number" step="0.5" name="expected_price_per_kg" id="id_expected_price_per_kg" class="form-control" placeholder="e.g. 26.50" required value="{{ form.expected_price_per_kg.value|default:'' }}">
+                            {% for error in form.expected_price_per_kg.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <!-- Live Valuation Alert Box -->
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center border">
+                                <span class="small text-muted"><i class="bi bi-calculator me-1"></i> Estimated Total Crop Valuation:</span>
+                                <span class="fw-bold text-success fs-5" id="calc-total-display">₹ 0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Quality Grade / Certification *</label>
+                            <input type="text" name="quality_grade" class="form-control" placeholder="e.g. AGMARK Grade A, Organic NPOP" required value="{{ form.quality_grade.value|default:'Grade A (Standard)' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold">Harvest Date *</label>
+                            {{ form.expected_harvest_date }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold">Available From *</label>
+                            {{ form.available_from }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Produce Photo (Optional)</label>
+                            {{ form.crop_image }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Listing Status *</label>
+                            {{ form.status }}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Specifications & Agronomic Notes</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Pesticide threshold, moisture range, organic methods, packaging preferences...">{{ form.description.value|default:'' }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-agri px-4 fw-bold">Publish Listing</button>
+                        <a href="{% url 'my_crops' %}" class="btn btn-light border px-4">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

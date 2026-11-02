@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}System Audit Logs | AgriSure Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">System Audit & Action Logs</h2>
+            <p class="text-muted small mb-0">Immutable chronological records of contractual agreements, status modifications, and payment operations.</p>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">Admin Dashboard</a>
+    </div>
+
+    <div class="card agri-card border-0 shadow-sm p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Timestamp (IST)</th>
+                        <th>Acting Actor</th>
+                        <th>Event Action</th>
+                        <th>Entity Type</th>
+                        <th>Target ID</th>
+                        <th>Audit Narrative</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                        <tr>
+                            <td class="text-muted">{{ log.timestamp|date:"d M Y, H:i:s" }}</td>
+                            <td>
+                                {% if log.user %}
+                                    <span class="fw-bold">{{ log.user.username }}</span> ({{ log.user.get_role_display }})
+                                {% else %}
+                                    <span class="text-muted">Platform Automated Service</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="badge bg-dark">{{ log.action }}</span></td>
+                            <td class="fw-semibold text-secondary">{{ log.object_type }}</td>
+                            <td><code>#{{ log.object_id }}</code></td>
+                            <td>{{ log.summary }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No audit trail records present.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

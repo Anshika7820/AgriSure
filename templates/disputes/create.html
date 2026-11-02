@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}File Dispute | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">File Dispute / Grievance</h3>
+                        <p class="text-muted small mb-0">Contract #<span class="text-success fw-bold">{{ contract.contract_number }}</span> &bull; {{ contract.crop_name }}</p>
+                    </div>
+                    <a href="{% url 'contract_detail' contract.id %}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+                </div>
+
+                <div class="alert alert-warning small mb-4">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    <strong>Formal Legal Notice:</strong> Submitting a dispute freezes automated milestone disbursements until the Platform Arbitration Conciliation Board reviews the claim.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Dispute Classification *</label>
+                        {{ form.reason }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Detailed Description & Evidence Reference *</label>
+                        {{ form.description }}
+                        <div class="form-text small">Detail specific weighbridge ticket numbers, moisture lab certificates, dispatch dates, or breach parameters.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-danger w-100 py-3 fw-bold">
+                        <i class="bi bi-shield-exclamation me-1"></i> Submit Formal Dispute for Platform Arbitration
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
