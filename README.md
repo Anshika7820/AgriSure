@@ -378,6 +378,7 @@ If no seed script exists, create users and sample records through the applicatio
 
 ## ▶️ Running the Application
 
+<<<<<<< HEAD
 Start the Django development server:
 
 ```bash
@@ -507,3 +508,29 @@ Verify all security, legal, and payment integrations before using the platform f
 ---
 
 **AgriSure — Building stronger connections between farmers and buyers through technology.** 🌾
+=======
+1. **PostgreSQL**: Configure `DATABASES` with environment variables (`DATABASE_URL`).
+2. **Channel Layer**: Configure Redis backend in `CHANNEL_LAYERS` in `config/settings.py`:
+   ```python
+   CHANNEL_LAYERS = {
+       "default": {
+           "BACKEND": "channels_redis.core.RedisChannelLayer",
+           "CONFIG": {"hosts": [os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/1")]},
+       }
+   }
+   ```
+3. **ASGI Server**: Run using Daphne or Uvicorn:
+   ```bash
+   daphne -b 0.0.0.0 -p 8000 config.asgi:application
+   ```
+4. **Static Collection**:
+   ```bash
+   python manage.py collectstatic --noinput
+   ```
+#   A g r i S u r e  
+ #   A g r i S u r e  
+ #   A g r i S u r e  
+ 
+>>>>>>> 0047ad8 (first commit)
+#   A g r i S u r e  
+ 
