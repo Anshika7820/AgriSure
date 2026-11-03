@@ -506,4 +506,5 @@ Verify all security, legal, and payment integrations before using the platform f
 
 ---
 
-**AgriSure — Building stronger connections between farmers and buyers through technology.** 🌾
+**AgriSure — Building stronger connections between farmers and buyers through technology.** 🌾#   A g r i S u r e  
+ 
