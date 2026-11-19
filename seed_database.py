@@ -74,12 +74,11 @@ def seed():
             village="Khanna Kalan",
             district="Ludhiana",
             state="Punjab",
-            total_land_acres=Decimal("25.50"),
-            primary_crops="Wheat, Basmati Rice, Mustard",
-            experience_years=18,
-            upi_id="gurpreet.singh@okaxis",
-            bank_account_number="987654321001",
-            ifsc_code="PUNB0123400"
+            postal_code="141401",
+            farm_area_acres=Decimal("25.5"),
+            farming_experience=14,
+            primary_crops="Sharbati Wheat, Basmati Rice 1121, Mustard",
+            bio="Third-generation progressive farmer practicing laser leveling, organic soil enrichment, and precision irrigation."
         )
         print("[+] Created Farmer: farmer1 (Gurpreet Singh)")
     else:
@@ -97,16 +96,15 @@ def seed():
         )
         FarmerProfile.objects.create(
             user=farmer2,
-            farm_name="Patel Organic Farms",
-            village="Sanand",
-            district="Ahmedabad",
+            farm_name="Patel Organic Agritech",
+            village="Gondal",
+            district="Rajkot",
             state="Gujarat",
-            total_land_acres=Decimal("40.00"),
-            primary_crops="Cotton, Turmeric, Cumin",
-            experience_years=12,
-            upi_id="ramesh.patel@okhdfcbank",
-            bank_account_number="987654321002",
-            ifsc_code="HDFC0001234"
+            postal_code="360311",
+            farm_area_acres=Decimal("18.0"),
+            farming_experience=10,
+            primary_crops="Organic Bt Cotton, Export Groundnut",
+            bio="Certified organic producer equipped with drip fertigation and solar pumping systems."
         )
         print("[+] Created Farmer: farmer2 (Ramesh Patel)")
     else:
@@ -127,16 +125,14 @@ def seed():
         )
         BuyerProfile.objects.create(
             user=buyer1,
-            company_name="Annapurna Agro Industries Pvt Ltd",
-            business_type=BuyerProfile.BusinessType.PROCESSOR,
-            gstin="07AAAAA1234A1Z5",
-            pan_number="AAAAA1234A",
-            registered_address="Plot 44, Food Processing Park, Rai Industrial Area",
-            city="Sonipat",
+            business_name="Annapurna Agro Industries Pvt Ltd",
+            business_type=BuyerProfile.BusinessType.FOOD_PROCESSOR,
+            contact_person="Vikram Mehta (VP Sourcing)",
+            address="Plot 44, Food Processing Park, Rai Industrial Area",
+            district="Sonipat",
             state="Haryana",
-            pincode="131029",
-            contact_person_name="Vikram Mehta",
-            contact_person_phone="+91 91234 56780"
+            postal_code="131029",
+            registration_number="07AAAAA1234A1Z5"
         )
         print("[+] Created Buyer: buyer1 (Annapurna Agro Industries)")
     else:
@@ -154,16 +150,14 @@ def seed():
         )
         BuyerProfile.objects.create(
             user=buyer2,
-            company_name="National Grain & Spice Exports",
+            business_name="National Grain & Spice Exports Ltd.",
             business_type=BuyerProfile.BusinessType.EXPORTER,
-            gstin="27BBBBB5678B1Z2",
-            pan_number="BBBBB5678B",
-            registered_address="Export Bhavan, Sector 18, Vashi",
-            city="Navi Mumbai",
+            contact_person="Pooja Sharma (Head of Export)",
+            address="Export Bhavan, Sector 18, Vashi",
+            district="Navi Mumbai",
             state="Maharashtra",
-            pincode="400703",
-            contact_person_name="Pooja Sharma",
-            contact_person_phone="+91 91234 56781"
+            postal_code="400703",
+            registration_number="27BBBBB5678B1Z2"
         )
         print("[+] Created Buyer: buyer2 (National Grain & Spice Exports)")
     else:
@@ -434,7 +428,6 @@ def seed():
             "quantity_kg": Decimal("5000.00"),
             "agreed_price_per_kg": Decimal("31.50"),
             "total_value": Decimal("157500.00"),
-            "advance_amount": Decimal("15750.00"),
             "delivery_schedule": f"Single bulk delivery by {(today + timedelta(days=50)).strftime('%d-%b-%Y')}.",
             "delivery_location": "Annapurna Processing Unit 2, Rai Industrial Area, Sonipat, Haryana",
             "quality_specifications": "Moisture <= 11.5%, Foreign matter <= 0.5%, Minimum test weight 78 kg/hL.",
@@ -503,7 +496,6 @@ def seed():
             "quantity_kg": Decimal("2500"),
             "agreed_price_per_kg": Decimal("64.00"),
             "total_value": Decimal("160000.00"),
-            "advance_amount": Decimal("16000.00"),
             "delivery_location": offer_rice.delivery_location,
             "delivery_schedule": f"Fulfillment scheduled on or before {(today + timedelta(days=20)).strftime('%d-%b-%Y')}.",
             "quality_specifications": offer_rice.quality_specifications,
