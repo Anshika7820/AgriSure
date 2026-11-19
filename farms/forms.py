@@ -15,6 +15,7 @@ class FarmForm(forms.ModelForm):
             "irrigation_source",
             "survey_number",
         ]
+<<<<<<< HEAD
         widgets = {
             "farm_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g. Green Valley Plot A"}),
             "village": forms.TextInput(attrs={"class": "form-control", "placeholder": "Village name"}),
@@ -32,3 +33,5 @@ class FarmForm(forms.ModelForm):
         if area is not None and area <= 0:
             raise forms.ValidationError("Farm area must be greater than zero acres.")
         return area
+=======
+>>>>>>> origin/main

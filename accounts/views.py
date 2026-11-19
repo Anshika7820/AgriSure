@@ -58,6 +58,7 @@ def register_farmer(request):
                     farm_name=f"{user.first_name}'s Farm"
                 )
 
+<<<<<<< HEAD
                 # Provision primary farm location for seamless crop listing
                 from farms.models import Farm
                 Farm.objects.create(
@@ -69,6 +70,8 @@ def register_farmer(request):
                     area_acres=form.cleaned_data["farm_area_acres"],
                 )
 
+=======
+>>>>>>> origin/main
                 AuditLog.log("USER_REGISTERED", "User", user.id, f"Farmer account registered for {user.username}", user=user)
 
                 login(request, user)
@@ -186,6 +189,14 @@ def upload_verification(request):
 
 
 def custom_logout(request):
+<<<<<<< HEAD
     logout(request)
     messages.info(request, "You have been securely signed out.")
     return redirect("home")
+=======
+    if request.method == "POST":
+        logout(request)
+        messages.info(request, "You have been securely signed out.")
+        return redirect("home")
+    return redirect("dashboard")
+>>>>>>> origin/main
