@@ -21,15 +21,11 @@ def farm_create(request):
             farm.save()
             AuditLog.log("FARM_CREATED", "Farm", farm.id, f"Added farm '{farm.farm_name}' ({farm.area_acres} acres)", user=request.user)
             messages.success(request, f"Farm '{farm.farm_name}' successfully added to your profile.")
-<<<<<<< HEAD
             if not request.user.crop_listings.exists():
                 return redirect("crop_create")
             return redirect("farm_list")
         else:
             messages.error(request, "Could not add farm plot. Please review the errors below.")
-=======
-            return redirect("farm_list")
->>>>>>> origin/main
     else:
         form = FarmForm()
     return render(request, "farmer/farms/form.html", {"form": form, "action": "Add New Farm"})

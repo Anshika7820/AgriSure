@@ -20,7 +20,6 @@ class CropListingForm(forms.ModelForm):
             "status",
         ]
         widgets = {
-<<<<<<< HEAD
             "farm": forms.Select(attrs={"class": "form-select"}),
             "category": forms.Select(attrs={"class": "form-select"}),
             "crop_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g. Sharbati Wheat, Basmati 1121"}),
@@ -33,18 +32,12 @@ class CropListingForm(forms.ModelForm):
             "crop_image": forms.FileInput(attrs={"class": "form-control", "accept": "image/*"}),
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "Pesticide threshold, moisture range, organic methods, packaging preferences..."}),
             "status": forms.Select(attrs={"class": "form-select"}),
-=======
-            "expected_harvest_date": forms.DateInput(attrs={"type": "date"}),
-            "available_from": forms.DateInput(attrs={"type": "date"}),
-            "description": forms.Textarea(attrs={"rows": 3}),
->>>>>>> origin/main
         }
 
     def __init__(self, *args, **kwargs):
         farmer = kwargs.pop("farmer", None)
         super().__init__(*args, **kwargs)
         if farmer:
-<<<<<<< HEAD
             farmer_farms = Farm.objects.filter(farmer=farmer)
             self.fields["farm"].queryset = farmer_farms
             self.fields["farm"].empty_label = "Select one of your registered farms"
@@ -80,19 +73,6 @@ class CropFilterForm(forms.Form):
     min_price = forms.DecimalField(required=False, min_value=0, widget=forms.NumberInput(attrs={"placeholder": "Min ₹/kg", "class": "form-control"}))
     max_price = forms.DecimalField(required=False, min_value=0, widget=forms.NumberInput(attrs={"placeholder": "Max ₹/kg", "class": "form-control"}))
     min_qty = forms.DecimalField(required=False, min_value=0, widget=forms.NumberInput(attrs={"placeholder": "Min kg", "class": "form-control"}))
-=======
-            self.fields["farm"].queryset = Farm.objects.filter(farmer=farmer)
-            self.fields["farm"].empty_label = "Select one of your registered farms"
-
-
-class CropFilterForm(forms.Form):
-    q = forms.CharField(required=False, label="Search Crop or Variety", widget=forms.TextInput(attrs={"placeholder": "e.g. Wheat, Basmati, Cotton..."}))
-    category = forms.ModelChoiceField(queryset=CropCategory.objects.all(), required=False, empty_label="All Categories")
-    state = forms.CharField(required=False, widget=forms.TextInput(attrs={"placeholder": "e.g. Punjab, Maharashtra..."}))
-    min_price = forms.DecimalField(required=False, min_value=0, widget=forms.NumberInput(attrs={"placeholder": "Min ₹/kg"}))
-    max_price = forms.DecimalField(required=False, min_value=0, widget=forms.NumberInput(attrs={"placeholder": "Max ₹/kg"}))
-    min_qty = forms.DecimalField(required=False, min_value=0, widget=forms.NumberInput(attrs={"placeholder": "Min kg"}))
->>>>>>> origin/main
     sort_by = forms.ChoiceField(
         choices=[
             ("-created_at", "Newest Listed"),
@@ -102,10 +82,6 @@ class CropFilterForm(forms.Form):
             ("-available_quantity_kg", "Quantity: Highest"),
         ],
         required=False,
-<<<<<<< HEAD
         initial="-created_at",
         widget=forms.Select(attrs={"class": "form-select"})
-=======
-        initial="-created_at"
->>>>>>> origin/main
     )
