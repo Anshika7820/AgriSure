@@ -11,13 +11,26 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'agrisure-insecure-key-for-deve
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS', '')
-ALLOWED_HOSTS = ALLOWED_HOSTS_ENV.split(',') if ALLOWED_HOSTS_ENV else ['*']
 
-# Trust Render's reverse proxy headers
-CSRF_TRUSTED_ORIGINS = [
-    f"https://{h}" for h in (ALLOWED_HOSTS_ENV.split(',') if ALLOWED_HOSTS_ENV else [])
-]
+ALLOWED_HOSTS = ['*'] if DEBUG else []
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS.extend([h.strip() for h in ALLOWED_HOSTS_ENV.split(',') if h.strip()])
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['*']
+
+# Trust Render reverse proxy & HTTPS origins
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
+for h in ALLOWED_HOSTS:
+    if h and h != '*':
+        origin = f"https://{h}" if not h.startswith('http') else h
+        if origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(origin)
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
