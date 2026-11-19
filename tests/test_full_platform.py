@@ -1,6 +1,9 @@
 import os
-import django
+import sys
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
@@ -47,6 +50,7 @@ test("Home Page", client.get("/").status_code)
 test("Marketplace Catalog", client.get("/marketplace/").status_code)
 crop = CropListing.objects.first()
 test("Crop Detail Anonymous", client.get(f"/marketplace/crop/{crop.id}/").status_code)
+test("Crop Photo Media File Serving", client.get(crop.image_url).status_code)
 test("Login Page", client.get("/login/").status_code)
 test("Register Farmer Page", client.get("/register/farmer/").status_code)
 test("Register Buyer Page", client.get("/register/buyer/").status_code)
