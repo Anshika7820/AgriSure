@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}{{ crop.crop_name }} | AgriSure Marketplace{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav class="mb-4">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-success text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'marketplace' %}" class="text-success text-decoration-none">Marketplace</a></li>
+            <li class="breadcrumb-item active">{{ crop.crop_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Left: Image & Specifications -->
+        <div class="col-lg-7">
+            <div class="card agri-card border-0 shadow-sm overflow-hidden mb-4">
+                <img src="{{ crop.image_url }}" class="img-fluid w-100" style="max-height: 420px; object-fit: cover;" alt="{{ crop.crop_name }}">
+
+                <div class="p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-light text-success border border-success border-opacity-25 fw-semibold fs-6">
+                            {{ crop.category.name }}
+                        </span>
+                        <span class="badge badge-agri-{{ crop.status|lower }} fs-6">{{ crop.get_status_display }}</span>
+                    </div>
+
+                    <h2 class="fw-bold text-dark mb-1">{{ crop.crop_name }}</h2>
+                    <p class="text-muted fs-6 mb-4">Variety: <strong>{{ crop.variety|default:"Commercial Grade" }}</strong> &bull; Grade: <strong>{{ crop.quality_grade }}</strong></p>
+
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Produce Details & Agronomic Standards</h5>
+                    <p class="text-secondary mb-4 leading-relaxed">
+                        {{ crop.description|default:"Cultivated using standardized good agricultural practices (GAP). Managed under integrated pest management (IPM) protocols with documented input applications. Produce is monitored to fulfill institutional food safety regulations." }}
+                    </p>
+
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <div class="text-muted small">Available Quantity</div>
+                                <div class="fw-bold fs-4 text-dark">{{ crop.available_quantity_kg|floatformat:0 }} kg</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Total harvest lot: {{ crop.total_quantity_kg|floatformat:0 }} kg</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <div class="text-muted small">Expected Harvest Date</div>
+                                <div class="fw-bold fs-4 text-dark">{{ crop.expected_harvest_date|date:"d M Y" }}</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Available dispatch: {{ crop.available_from|date:"d M Y" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farm Origin & Location Card -->
+            <div class="card agri-card border-0 shadow-sm p-4">
+                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-geo-alt-fill text-danger me-2"></i> Farm Origin & Soil Profile</h5>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Farm Plot Name</label>
+                        <span class="fw-bold">{{ crop.farm.farm_name }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Cultivable Area</label>
+                        <span class="fw-bold">{{ crop.farm.area_acres }} Acres</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Location Coordinates</label>
+                        <span class="fw-bold">{{ crop.farm.village }}, {{ crop.farm.district }}, {{ crop.farm.state }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Soil & Irrigation</label>
+                        <span class="fw-bold">{{ crop.farm.soil_type|default:"Alluvial" }} &bull; {{ crop.farm.irrigation_source|default:"Canal" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Farmer Credibility & Offer Action Card -->
+        <div class="col-lg-5">
+            <!-- Farmer Credibility Card -->
+            <div class="card agri-card border-0 shadow-sm p-4 mb-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3" style="width: 60px; height: 60px;">
+                        {{ crop.farmer.username|slice:":1"|upper }}
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-1">
+                            <h5 class="fw-bold mb-0 text-dark">{{ crop.farmer.get_full_name|default:crop.farmer.username }}</h5>
+                            {% if crop.farmer.is_verified %}
+                                <i class="bi bi-patch-check-fill text-success" title="Verified Producer"></i>
+                            {% endif %}
+                        </div>
+                        <div class="text-muted small">Registered AgriSure Producer</div>
+                        <div class="small text-success mt-1">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <span class="fw-bold text-dark ms-1">5.0 / 5.0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top pt-2 small text-muted">
+                    <div><i class="bi bi-clock-history me-1"></i> {{ crop.farmer.farmer_profile.farming_experience|default:"8" }} Years Farming Experience</div>
+                    <div><i class="bi bi-shield-check text-success me-1"></i> Land Title & KYC Verified by Admin</div>
+                </div>
+            </div>
+
+            <!-- Commercial Pricing & Make Offer Action -->
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="mb-3">
+                    <span class="text-muted small text-uppercase fw-bold">Farmer's Asking Price</span>
+                    <div class="display-6 fw-bold text-success mb-1">
+                        ₹ {{ crop.expected_price_per_kg }}<span class="fs-5 text-muted fw-normal"> / kg</span>
+                    </div>
+                    <div class="badge bg-success bg-opacity-10 text-success fw-semibold">
+                        Assured Fixed Forward Contract Rate
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                {% if user.is_authenticated %}
+                    {% if user.is_buyer %}
+                        {% if user_offer %}
+                            <div class="alert alert-info small mb-3">
+                                <i class="bi bi-info-circle-fill me-1"></i> You have already submitted an offer on this crop.
+                            </div>
+                            <a href="{% url 'offer_detail' user_offer.id %}" class="btn btn-agri w-100 py-3 fw-bold">
+                                View Negotiation Thread (#{{ user_offer.id }})
+                            </a>
+                        {% else %}
+                            <h5 class="fw-bold mb-2">Ready to Procure?</h5>
+                            <p class="text-muted small mb-3">Submit your purchase terms directly to the farmer to commence bilateral contract negotiations.</p>
+
+                            <a href="{% url 'offer_create' crop.id %}" class="btn btn-agri-gold w-100 py-3 fw-bold fs-6 shadow">
+                                <i class="bi bi-chat-quote-fill me-2"></i> Submit Purchase Offer
+                            </a>
+                        {% endif %}
+                    {% elif user.is_farmer %}
+                        <div class="alert alert-secondary small mb-0">
+                            <i class="bi bi-info-circle me-1"></i> You are viewing this listing as a registered Farmer. Buyer accounts can submit formal purchase offers.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-secondary small mb-0">
+                            Administrator account mode.
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <h5 class="fw-bold mb-2">Interested in Procurement?</h5>
+                    <p class="text-muted small mb-3">Sign in or register as a Buyer to negotiate forward farming agreements directly with the producer.</p>
+                    <a href="{% url 'login' %}?next={% url 'crop_detail' crop.id %}" class="btn btn-agri w-100 py-3 fw-bold mb-2">
+                        Sign In to Make Offer
+                    </a>
+                    <a href="{% url 'register_buyer' %}" class="btn btn-outline-warning text-dark w-100 py-2 fw-semibold">
+                        Register as Buyer
+                    </a>
+                {% endif %}
+
+                <div class="mt-4 pt-3 border-top text-center text-muted small" style="font-size: 0.78rem;">
+                    <i class="bi bi-shield-lock-fill text-success me-1"></i> Escrow Settlement & Force Majeure Protected
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

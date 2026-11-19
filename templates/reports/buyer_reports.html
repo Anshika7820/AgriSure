@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Buyer Procurement Reports | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Procurement Spend & Volume Reports</h2>
+            <p class="text-muted small mb-0">Track commercial commitments, volume secured per commodity, and cash outflow settlements.</p>
+        </div>
+        <a href="{% url 'buyer_dashboard' %}" class="btn btn-outline-secondary btn-sm">Dashboard</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-green">
+                    <i class="bi bi-currency-rupee"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Committed Procurement</div>
+                    <div class="stat-value text-success">₹ {{ total_procurement_value|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-blue">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Total Volume Secured</div>
+                    <div class="stat-value text-primary">{{ total_kg_procured|floatformat:0 }} <span class="fs-6 text-muted fw-normal">kg</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-purple">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Settled Payments</div>
+                    <div class="stat-value text-dark">₹ {{ total_paid|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper stat-icon-gold">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div>
+                    <div class="stat-title">Pending Due Balance</div>
+                    <div class="stat-value text-warning">₹ {{ total_pending_pay|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card agri-card border-0 shadow-sm p-4">
+        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Procurement Allocation by Agricultural Commodity</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Crop Commodity</th>
+                        <th>Volume Procured (kg)</th>
+                        <th>Metric Tonnes (MT)</th>
+                        <th>Financial Spend Commitment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in crop_breakdown %}
+                        <tr>
+                            <td class="fw-bold text-dark">{{ item.crop_name }}</td>
+                            <td class="fw-semibold">{{ item.qty|floatformat:0 }} kg</td>
+                            <td class="text-muted">{{ item.qty|floatformat:2 }} MT</td>
+                            <td class="fw-bold text-success fs-6">₹ {{ item.spend|intcomma }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">No procurement contracts on record.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

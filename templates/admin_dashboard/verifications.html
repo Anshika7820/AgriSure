@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Document Verification Queue | AgriSure Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Document & KYC Verification Queue</h2>
+            <p class="text-muted small mb-0">Inspect legal land deeds, khasra records, and corporate business licenses.</p>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">Admin Dashboard</a>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="d-flex gap-2 mb-4">
+        <a href="{% url 'admin_verifications' %}" class="btn btn-sm {% if not status_filter %}btn-dark{% else %}btn-light border{% endif %} rounded-pill px-3">
+            All Documents
+        </a>
+        <a href="?status=PENDING" class="btn btn-sm {% if status_filter == 'PENDING' %}btn-warning text-dark{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Pending Review
+        </a>
+        <a href="?status=APPROVED" class="btn btn-sm {% if status_filter == 'APPROVED' %}btn-success{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Approved
+        </a>
+        <a href="?status=REJECTED" class="btn btn-sm {% if status_filter == 'REJECTED' %}btn-danger{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Rejected
+        </a>
+    </div>
+
+    <div class="card agri-card border-0 shadow-sm p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Document Title</th>
+                        <th>File Attachment</th>
+                        <th>Submitted On</th>
+                        <th>Status</th>
+                        <th>Decision & Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                        <tr>
+                            <td class="fw-bold">#{{ doc.id }}</td>
+                            <td>
+                                <div class="fw-bold">{{ doc.user.get_full_name|default:doc.user.username }}</div>
+                                <div class="text-muted small">{{ doc.user.email }}</div>
+                            </td>
+                            <td><span class="badge bg-secondary">{{ doc.user.get_role_display }}</span></td>
+                            <td class="fw-semibold">{{ doc.document_type }}</td>
+                            <td>
+                                {% if doc.document_file %}
+                                    <a href="{{ doc.document_file.url }}" target="_blank" class="btn btn-outline-primary btn-sm py-0">
+                                        <i class="bi bi-file-earmark-arrow-down me-1"></i> Inspect File
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">No file</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ doc.submitted_at|date:"d M Y, H:i" }}</td>
+                            <td>
+                                {% if doc.status == 'APPROVED' %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% elif doc.status == 'PENDING' %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if doc.status == 'PENDING' %}
+                                    <form method="post" action="{% url 'admin_verify_action' doc.id %}" class="d-flex gap-2">
+                                        {% csrf_token %}
+                                        <input type="text" name="admin_notes" class="form-control form-control-sm" placeholder="Notes (optional)" style="width: 140px;">
+                                        <button type="submit" name="action" value="APPROVE" class="btn btn-success btn-sm py-0" title="Approve Verification">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                        <button type="submit" name="action" value="REJECT" class="btn btn-outline-danger btn-sm py-0" title="Reject Verification">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <div class="small text-muted">{{ doc.admin_notes|default:"Reviewed" }}</div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">No documents found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

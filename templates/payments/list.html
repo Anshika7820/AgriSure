@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Payments & Escrow Settlements | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Payments & Escrow Settlements</h2>
+            <p class="text-muted small mb-0">Transparent financial ledger tracking advance deposits and post-weighment milestone settlements.</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{% url 'contract_list' %}" class="btn btn-outline-success btn-sm">View Contracts</a>
+        </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="d-flex gap-2 overflow-auto pb-2 mb-4">
+        <a href="{% url 'payment_list' %}" class="btn btn-sm {% if not current_status %}btn-dark{% else %}btn-light border{% endif %} rounded-pill px-3">
+            All Payments
+        </a>
+        <a href="?status=PENDING" class="btn btn-sm {% if current_status == 'PENDING' %}btn-warning text-dark{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Pending Due
+        </a>
+        <a href="?status=SUCCESS" class="btn btn-sm {% if current_status == 'SUCCESS' %}btn-success{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Settled / Cleared
+        </a>
+    </div>
+
+    <div class="card agri-card border-0 shadow-sm p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Transaction #</th>
+                        <th>Contract Reference</th>
+                        <th>Payment Purpose</th>
+                        <th>Payer (Purchaser)</th>
+                        <th>Beneficiary (Farmer)</th>
+                        <th>Amount (INR)</th>
+                        <th>Payment Method</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pay in payments %}
+                        <tr>
+                            <td class="fw-bold">
+                                <a href="{% url 'payment_detail' pay.id %}" class="text-dark text-decoration-none">
+                                    #{{ pay.id|stringformat:"06d" }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'contract_detail' pay.contract.id %}" class="text-success text-decoration-none fw-semibold">
+                                    {{ pay.contract.contract_number }}
+                                </a>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ pay.get_payment_type_display }}</div>
+                                <div class="text-muted small">{{ pay.contract.crop_name }}</div>
+                            </td>
+                            <td>{{ pay.payer.get_full_name|default:pay.payer.username }}</td>
+                            <td>{{ pay.recipient.get_full_name|default:pay.recipient.username }}</td>
+                            <td class="fw-bold text-success fs-6">₹ {{ pay.amount|intcomma }}</td>
+                            <td class="small text-muted">{{ pay.payment_method }}</td>
+                            <td>
+                                {% if pay.status == 'SUCCESS' %}
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Settled</span>
+                                {% elif pay.status == 'PENDING' %}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Payment Due</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ pay.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    {% if pay.status == 'PENDING' and user == pay.payer %}
+                                        <a href="{% url 'payment_checkout' pay.id %}" class="btn btn-agri-gold btn-sm py-1 px-3 fw-bold">
+                                            Pay Now
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'payment_detail' pay.id %}" class="btn btn-outline-success btn-sm py-1 px-2">
+                                            Voucher
+                                        </a>
+                                    {% endif %}
+                                    {% if pay.status == 'SUCCESS' %}
+                                        <a href="{% url 'payment_receipt_download' pay.id %}" class="btn btn-light border btn-sm py-1 px-2 text-danger" title="Download Receipt PDF">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <i class="bi bi-cash-coin fs-2 d-block mb-2 text-muted"></i>
+                                No payment obligations or records found. Activating signed contracts creates advance and milestone settlements here.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

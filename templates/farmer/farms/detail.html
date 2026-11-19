@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ farm.farm_name }} | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h2 class="fw-bold text-dark mb-0">{{ farm.farm_name }}</h2>
+                <span class="badge bg-success">{{ farm.area_acres }} Acres</span>
+            </div>
+            <p class="text-muted small mb-0">{{ farm.village }}, {{ farm.district }}, {{ farm.state }} &bull; Survey #{{ farm.survey_number|default:"Verified" }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'farm_update' farm.id %}" class="btn btn-outline-success btn-sm">Edit Farm</a>
+            <a href="{% url 'farm_list' %}" class="btn btn-light border btn-sm">Back</a>
+        </div>
+    </div>
+
+    <div class="card agri-card border-0 shadow-sm p-4 mb-4">
+        <h5 class="fw-bold mb-3">Crop Listings on this Farm</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Crop</th>
+                        <th>Category</th>
+                        <th>Volume</th>
+                        <th>Asking Rate</th>
+                        <th>Harvest Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for crop in listings %}
+                        <tr>
+                            <td class="fw-bold">{{ crop.crop_name }} ({{ crop.variety|default:"Std" }})</td>
+                            <td>{{ crop.category.name }}</td>
+                            <td>{{ crop.available_quantity_kg|floatformat:0 }} / {{ crop.total_quantity_kg|floatformat:0 }} kg</td>
+                            <td class="fw-bold text-success">₹ {{ crop.expected_price_per_kg }}/kg</td>
+                            <td>{{ crop.expected_harvest_date|date:"d M Y" }}</td>
+                            <td><span class="badge badge-agri-{{ crop.status|lower }}">{{ crop.get_status_display }}</span></td>
+                            <td>
+                                <a href="{% url 'crop_update' crop.id %}" class="btn btn-light border btn-sm py-0">Edit</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No crops listed on this farm yet. <a href="{% url 'crop_create' %}">Add a crop listing</a>.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

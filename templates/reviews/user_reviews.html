@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews for {{ target_user.get_full_name|default:target_user.username }} | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-2" style="width: 60px; height: 60px;">
+                    {{ target_user.username|slice:":1"|upper }}
+                </div>
+                <div>
+                    <h3 class="fw-bold text-dark mb-0">{{ target_user.get_full_name|default:target_user.username }}</h3>
+                    <div class="text-muted small">{{ target_user.get_role_display }} &bull; Transaction Reputation Log</div>
+                </div>
+            </div>
+
+            <div class="card agri-card border-0 shadow-sm p-4">
+                <h5 class="fw-bold text-dark mb-3">Counterparty Ratings & Feedback</h5>
+                <div class="list-group list-group-flush">
+                    {% for rev in reviews %}
+                        <div class="list-group-item px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold">{{ rev.reviewer.get_full_name|default:rev.reviewer.username }}</span>
+                                <span class="text-warning">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= rev.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            <div class="text-muted small mb-2">Contract: {{ rev.contract.contract_number }} ({{ rev.contract.crop_name }}) &bull; {{ rev.created_at|date:"d M Y" }}</div>
+                            <p class="mb-0 text-secondary small">{{ rev.comment }}</p>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            No reviews recorded for this user yet.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}My Crop Listings | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">My Crop Listings</h2>
+            <p class="text-muted small mb-0">Publish harvest volumes, manage prices, and monitor buyer offers.</p>
+        </div>
+        <a href="{% url 'crop_create' %}" class="btn btn-agri">
+            <i class="bi bi-plus-circle me-1"></i> List New Crop
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for crop in crops %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card agri-card border-0 shadow-sm h-100 overflow-hidden">
+                    <img src="{{ crop.image_url }}" class="crop-card-img" style="height: 180px; width: 100%; object-fit: cover;" alt="{{ crop.crop_name }}">
+                    <div class="p-4 d-flex flex-column flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-light text-success border border-success border-opacity-25 fw-semibold">
+                                {{ crop.category.name }}
+                            </span>
+                            <span class="badge badge-agri-{{ crop.status|lower }}">{{ crop.get_status_display }}</span>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-1">{{ crop.crop_name }}</h4>
+                        <div class="text-muted small mb-3">{{ crop.variety|default:"Commercial Grade" }} &bull; {{ crop.quality_grade }}</div>
+
+                        <div class="bg-light p-3 rounded-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small text-muted">Asking Price:</span>
+                                <span class="fw-bold text-success fs-5">₹ {{ crop.expected_price_per_kg }}/kg</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small text-muted">Available Stock:</span>
+                                <span class="fw-bold text-dark">{{ crop.available_quantity_kg|floatformat:0 }} kg</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small text-muted">Total Crop Lot:</span>
+                                <span class="text-muted small">{{ crop.total_quantity_kg|floatformat:0 }} kg</span>
+                            </div>
+                        </div>
+
+                        <div class="small text-muted mb-3">
+                            <div><i class="bi bi-geo-alt text-danger me-1"></i> {{ crop.farm.farm_name }} ({{ crop.farm.district }})</div>
+                            <div><i class="bi bi-calendar-check text-primary me-1"></i> Harvest: {{ crop.expected_harvest_date|date:"d M Y" }}</div>
+                            <div><i class="bi bi-chat-left-dots text-warning me-1"></i> {{ crop.offer_count }} Buyer Offers Received</div>
+                        </div>
+
+                        <div class="d-flex gap-2 border-top pt-3">
+                            <a href="{% url 'crop_update' crop.id %}" class="btn btn-outline-success btn-sm flex-grow-1">
+                                <i class="bi bi-pencil me-1"></i> Edit
+                            </a>
+                            <a href="{% url 'crop_detail' crop.id %}" class="btn btn-light border btn-sm flex-grow-1">
+                                <i class="bi bi-eye me-1"></i> View
+                            </a>
+                            <form method="post" action="{% url 'crop_status_toggle' crop.id %}" class="d-inline">
+                                {% csrf_token %}
+                                {% if crop.status == 'ACTIVE' %}
+                                    <input type="hidden" name="status" value="CLOSED">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Close Listing"><i class="bi bi-pause-circle"></i></button>
+                                {% else %}
+                                    <input type="hidden" name="status" value="ACTIVE">
+                                    <button type="submit" class="btn btn-outline-success btn-sm" title="Publish Listing"><i class="bi bi-play-circle"></i></button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-basket display-4 text-muted"></i>
+                <h5 class="fw-bold mt-3">No Crops Listed Yet</h5>
+                <p class="text-muted small">Publish your harvest to receive binding offers from verified agricultural buyers.</p>
+                <a href="{% url 'crop_create' %}" class="btn btn-agri mt-2">Publish First Crop</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

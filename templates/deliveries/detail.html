@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Delivery {{ delivery.delivery_number }} | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-secondary">Consignment Fulfillment</span>
+                <span class="badge badge-agri-{{ delivery.status|lower }}">{{ delivery.get_status_display }}</span>
+            </div>
+            <h2 class="fw-bold text-dark mb-0">{{ delivery.delivery_number }}</h2>
+            <p class="text-muted small mb-0">Contract #<a href="{% url 'contract_detail' delivery.contract.id %}" class="text-success fw-bold text-decoration-none">{{ delivery.contract.contract_number }}</a> &bull; {{ delivery.contract.crop_name }}</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{% url 'delivery_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> All Deliveries</a>
+        </div>
+    </div>
+
+    <!-- Stepper Status -->
+    <div class="card agri-card border-0 shadow-sm p-4 mb-4">
+        <div class="stepper-wrapper">
+            <div class="stepper-item completed">
+                <div class="step-counter"><i class="bi bi-calendar-check"></i></div>
+                <div class="small fw-bold">Scheduled</div>
+            </div>
+            <div class="stepper-item {% if delivery.status == 'IN_TRANSIT' or delivery.status == 'CONFIRMED' %}completed{% else %}active{% endif %}">
+                <div class="step-counter">{% if delivery.status == 'IN_TRANSIT' or delivery.status == 'CONFIRMED' %}<i class="bi bi-truck"></i>{% else %}2{% endif %}</div>
+                <div class="small fw-bold">In Transit / Dispatched</div>
+            </div>
+            <div class="stepper-item {% if delivery.status == 'CONFIRMED' %}completed{% elif delivery.status == 'REJECTED' %}completed bg-danger text-white{% endif %}">
+                <div class="step-counter">{% if delivery.status == 'CONFIRMED' %}<i class="bi bi-check-lg"></i>{% elif delivery.status == 'REJECTED' %}<i class="bi bi-x-lg"></i>{% else %}3{% endif %}</div>
+                <div class="small fw-bold">Weighbridge Confirmed</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Delivery Summary Info -->
+        <div class="col-lg-6">
+            <div class="card agri-card border-0 shadow-sm p-4 mb-4">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Consignment Parameters</h5>
+                <table class="table table-bordered small mb-0">
+                    <tbody>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted" style="width: 40%;">Crop Commodity</td>
+                            <td>{{ delivery.contract.crop_name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Scheduled Fulfillment</td>
+                            <td class="fw-bold">{{ delivery.scheduled_date|date:"d F Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Scheduled Volume</td>
+                            <td class="fw-bold text-dark fs-6">{{ delivery.quantity_scheduled_kg|floatformat:0 }} kg</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Dispatched Volume</td>
+                            <td>{{ delivery.quantity_delivered_kg|default:"Not dispatched yet" }} {% if delivery.quantity_delivered_kg %}kg{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Confirmed Received Scale</td>
+                            <td class="fw-bold text-success fs-5">{{ delivery.quantity_received_kg|default:"Pending Scale Scale" }} {% if delivery.quantity_received_kg %}kg{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Delivery Location</td>
+                            <td>{{ delivery.contract.delivery_location }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Dispatcher Notes</td>
+                            <td class="text-muted">{{ delivery.delivery_notes|default:"No transit notes recorded" }}</td>
+                        </tr>
+                        {% if delivery.rejection_reason %}
+                            <tr>
+                                <td class="bg-danger bg-opacity-10 fw-bold text-danger">Rejection Grounds</td>
+                                <td class="text-danger fw-semibold">{{ delivery.rejection_reason }}</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Role Action Area -->
+        <div class="col-lg-6">
+            <!-- Farmer Action: Dispatch Consignment -->
+            {% if is_farmer and delivery.status == 'SCHEDULED' %}
+                <div class="card agri-card border-0 shadow-sm p-4 border-success">
+                    <h5 class="fw-bold text-success mb-2"><i class="bi bi-truck me-2"></i> Record Consignment Dispatch</h5>
+                    <p class="text-muted small mb-3">Record the harvested vehicle departure, driver details, and dispatched weighment.</p>
+                    <form method="post" action="{% url 'delivery_dispatch' delivery.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Actual Dispatched Quantity (kg) *</label>
+                            <input type="number" step="10" name="quantity_delivered_kg" class="form-control" value="{{ delivery.quantity_scheduled_kg|floatformat:0 }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Vehicle Registration & Driver Contact *</label>
+                            <textarea name="delivery_notes" class="form-control" rows="3" placeholder="e.g. Truck PB-10-AB-1234, Driver Mohan Singh (+91 98765 11111), Weigh slip #4401" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-agri w-100 py-3 fw-bold">
+                            <i class="bi bi-send-check-fill me-1"></i> Mark Consignment as IN TRANSIT
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+            <!-- Buyer Action: Confirm Receipt & Weighment -->
+            {% if is_buyer and delivery.status == 'IN_TRANSIT' %}
+                <div class="card agri-card border-0 shadow-sm p-4 border-warning">
+                    <h5 class="fw-bold text-warning mb-2"><i class="bi bi-patch-check-fill me-2"></i> Weighbridge Confirmation & Acceptance</h5>
+                    <p class="text-muted small mb-3">Record the verified net weighment. Confirming automatically releases the milestone payment voucher!</p>
+                    <form method="post" action="{% url 'delivery_confirm' delivery.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Acceptance Decision *</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="decision" id="dec_confirm" value="CONFIRM" checked>
+                                <label class="form-check-label fw-bold text-success" for="dec_confirm">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Confirm & Accept Produce Batch
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="decision" id="dec_reject" value="REJECT">
+                                <label class="form-check-label fw-bold text-danger" for="dec_reject">
+                                    <i class="bi bi-x-circle-fill me-1"></i> Reject Consignment (Quality Discrepancy)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Actual Net Weighbridge Scale (kg) *</label>
+                            <input type="number" step="1" name="quantity_received_kg" class="form-control" value="{{ delivery.quantity_delivered_kg|default:delivery.quantity_scheduled_kg|floatformat:0 }}" required>
+                            <div class="form-text small">Enter net weight recorded after tare deduction.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold">Quality Testing Remarks / Reason if Rejecting</label>
+                            <textarea name="rejection_reason" class="form-control" rows="2" placeholder="e.g. Moisture 10.5%, Purity 99.2% verified at Central Weighbridge scale..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-agri-gold w-100 py-3 fw-bold">
+                            Submit Weighment & Authorize Settlement
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+            <!-- Status Card if Completed -->
+            {% if delivery.status == 'CONFIRMED' %}
+                <div class="card agri-card border-0 shadow-sm p-4 bg-light text-center">
+                    <i class="bi bi-check-circle-fill text-success display-4 mb-2"></i>
+                    <h5 class="fw-bold text-success">Weighment Confirmed & Accepted</h5>
+                    <p class="text-muted small mb-3">
+                        Total <strong>{{ delivery.quantity_received_kg|floatformat:0 }} kg</strong> verified at buyer destination on {{ delivery.delivered_at|date:"d-M-Y H:i" }}. Milestone payment has been generated.
+                    </p>
+                    <a href="{% url 'payment_list' %}" class="btn btn-agri btn-sm">View Payment Voucher</a>
+                </div>
+            {% elif delivery.status == 'REJECTED' %}
+                <div class="card agri-card border-0 shadow-sm p-4 bg-danger bg-opacity-10 text-center">
+                    <i class="bi bi-x-circle-fill text-danger display-4 mb-2"></i>
+                    <h5 class="fw-bold text-danger">Consignment Rejected</h5>
+                    <p class="small text-danger mb-3">{{ delivery.rejection_reason }}</p>
+                    <a href="{% url 'dispute_create' delivery.contract.id %}" class="btn btn-danger btn-sm">Escalate to Platform Dispute Tribunal</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

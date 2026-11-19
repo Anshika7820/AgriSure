@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Contracts & Agreements | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Farming Contracts & Legal Agreements</h2>
+            <p class="text-muted small mb-0">Legally binding digital agreements established under the AgriSure Contract Protocol.</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{% url 'marketplace' %}" class="btn btn-agri btn-sm">Explore Marketplace</a>
+        </div>
+    </div>
+
+    <!-- Status Filter Pills -->
+    <div class="d-flex gap-2 overflow-auto pb-2 mb-4">
+        <a href="{% url 'contract_list' %}" class="btn btn-sm {% if not current_status %}btn-dark{% else %}btn-light border{% endif %} rounded-pill px-3">
+            All Contracts
+        </a>
+        <a href="?status=PROPOSED" class="btn btn-sm {% if current_status == 'PROPOSED' %}btn-warning text-dark{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Pending Signature
+        </a>
+        <a href="?status=ACTIVE" class="btn btn-sm {% if current_status == 'ACTIVE' %}btn-success{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Active / In Execution
+        </a>
+        <a href="?status=COMPLETED" class="btn btn-sm {% if current_status == 'COMPLETED' %}btn-primary{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Completed / Fulfilled
+        </a>
+        <a href="?status=DISPUTED" class="btn btn-sm {% if current_status == 'DISPUTED' %}btn-danger{% else %}btn-light border{% endif %} rounded-pill px-3">
+            Under Dispute
+        </a>
+    </div>
+
+    <div class="card agri-card border-0 shadow-sm p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Contract Identifier</th>
+                        <th>Crop & Variety</th>
+                        <th>Farmer (Producer)</th>
+                        <th>Buyer (Enterprise)</th>
+                        <th>Contract Volume</th>
+                        <th>Agreed Rate</th>
+                        <th>Total Valuation</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contract in contracts %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'contract_detail' contract.id %}" class="fw-bold text-success text-decoration-none">
+                                    {{ contract.contract_number }}
+                                </a>
+                                <div class="text-muted" style="font-size: 0.72rem;">{{ contract.created_at|date:"d M Y" }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ contract.crop_name }}</div>
+                                <div class="text-muted small">{{ contract.variety|default:"Standard" }}</div>
+                            </td>
+                            <td>
+                                <div>{{ contract.farmer.get_full_name|default:contract.farmer.username }}</div>
+                                {% if contract.farmer_accepted %}
+                                    <span class="badge bg-success p-0 px-1" style="font-size: 0.65rem;"><i class="bi bi-check"></i> Signed</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark p-0 px-1" style="font-size: 0.65rem;">Unsigned</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div>{{ contract.buyer.get_full_name|default:contract.buyer.username }}</div>
+                                {% if contract.buyer_accepted %}
+                                    <span class="badge bg-success p-0 px-1" style="font-size: 0.65rem;"><i class="bi bi-check"></i> Signed</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark p-0 px-1" style="font-size: 0.65rem;">Unsigned</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold">{{ contract.quantity_kg|floatformat:0 }} kg</td>
+                            <td class="fw-bold text-success">₹ {{ contract.agreed_price_per_kg }}/kg</td>
+                            <td class="fw-bold text-dark">₹ {{ contract.total_value|intcomma }}</td>
+                            <td>
+                                <span class="badge badge-agri-{{ contract.status|lower }}">{{ contract.get_status_display }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="{% url 'contract_detail' contract.id %}" class="btn btn-outline-success btn-sm py-0">
+                                        View
+                                    </a>
+                                    <a href="{% url 'contract_download_pdf' contract.id %}" class="btn btn-light border btn-sm py-0 text-danger" title="Download Official PDF">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <i class="bi bi-file-earmark-text fs-2 d-block mb-2 text-muted"></i>
+                                No contracts matching this view. When an offer is accepted by both farmer and buyer, an enforceable contract is generated here.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

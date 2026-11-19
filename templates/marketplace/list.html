@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Agricultural Crop Marketplace | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Agricultural Crop Marketplace</h2>
+            <p class="text-muted small mb-0">Discover verified harvest lots available for direct bilateral forward farming contracts.</p>
+        </div>
+        <div class="text-muted small">
+            Showing <strong>{{ page_obj.paginator.count }}</strong> verified crop lots
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card agri-card border-0 shadow-sm p-3 mb-4 bg-white">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" class="form-control bg-light border-start-0" placeholder="Crop, variety, or district..." value="{{ request.GET.q }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <select name="category" class="form-select bg-light">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"i" %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="state" class="form-control bg-light" placeholder="State (e.g. Punjab)" value="{{ request.GET.state }}">
+            </div>
+            <div class="col-md-2">
+                <div class="input-group">
+                    <input type="number" step="0.5" name="max_price" class="form-control bg-light" placeholder="Max ₹/kg" value="{{ request.GET.max_price }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <select name="sort_by" class="form-select bg-light">
+                    <option value="-created_at" {% if request.GET.sort_by == "-created_at" %}selected{% endif %}>Newest Listed</option>
+                    <option value="expected_price_per_kg" {% if request.GET.sort_by == "expected_price_per_kg" %}selected{% endif %}>Price: Low to High</option>
+                    <option value="-expected_price_per_kg" {% if request.GET.sort_by == "-expected_price_per_kg" %}selected{% endif %}>Price: High to Low</option>
+                    <option value="expected_harvest_date" {% if request.GET.sort_by == "expected_harvest_date" %}selected{% endif %}>Harvest: Earliest</option>
+                    <option value="-available_quantity_kg" {% if request.GET.sort_by == "-available_quantity_kg" %}selected{% endif %}>Highest Volume</option>
+                </select>
+            </div>
+            <div class="col-md-1 d-flex gap-1">
+                <button type="submit" class="btn btn-agri w-100"><i class="bi bi-funnel-fill"></i></button>
+                <a href="{% url 'marketplace' %}" class="btn btn-light border" title="Reset Filters"><i class="bi bi-arrow-clockwise"></i></a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Crop Cards Grid -->
+    <div class="row g-4">
+        {% for crop in page_obj %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 agri-card agri-card-hover border-0 shadow-sm">
+                    <img src="{{ crop.image_url }}" class="crop-card-img" style="height: 180px; width: 100%; object-fit: cover;" alt="{{ crop.crop_name }}">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-light text-success border border-success border-opacity-25 fw-semibold">
+                                {{ crop.category.name }}
+                            </span>
+                            <span class="badge badge-agri-active">{{ crop.get_status_display }}</span>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-1">{{ crop.crop_name }}</h4>
+                        <div class="text-muted small mb-3">{{ crop.variety|default:"Standard Commercial Grade" }} &bull; {{ crop.quality_grade }}</div>
+
+                        <div class="d-flex justify-content-between align-items-baseline mb-3 bg-light p-3 rounded-3">
+                            <div>
+                                <div class="small text-muted">Asking Price</div>
+                                <div class="crop-card-price">₹ {{ crop.expected_price_per_kg }}<span class="fs-6 fw-normal text-muted">/kg</span></div>
+                            </div>
+                            <div class="text-end">
+                                <div class="small text-muted">Available Volume</div>
+                                <div class="fw-bold text-dark fs-5">{{ crop.available_quantity_kg|floatformat:0 }} kg</div>
+                            </div>
+                        </div>
+
+                        <div class="small text-muted mb-4">
+                            <div class="mb-1">
+                                <i class="bi bi-person-check-fill text-success me-1"></i> Farmer: <strong>{{ crop.farmer.get_full_name|default:crop.farmer.username }}</strong>
+                                {% if crop.farmer.is_verified %}<span class="badge bg-success p-0 px-1 ms-1">Verified</span>{% endif %}
+                            </div>
+                            <div class="mb-1">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i> Origin: {{ crop.farm.district }}, {{ crop.farm.state }}
+                            </div>
+                            <div>
+                                <i class="bi bi-calendar-event-fill text-primary me-1"></i> Harvest: {{ crop.expected_harvest_date|date:"d M Y" }}
+                            </div>
+                        </div>
+
+                        <div class="mt-auto">
+                            <a href="{% url 'crop_detail' crop.id %}" class="btn btn-agri w-100 fw-semibold">
+                                View Full Details & Make Offer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-search display-4 text-muted"></i>
+                <h4 class="fw-bold mt-3">No Crops Match Your Filters</h4>
+                <p class="text-muted small">Try broadening your search query or price criteria.</p>
+                <a href="{% url 'marketplace' %}" class="btn btn-agri mt-2">Clear Filters</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">{{ action }}</h3>
+                        <p class="text-muted small mb-0">Record plot details for contract farming verification</p>
+                    </div>
+                    <a href="{% url 'farm_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Farms
+                    </a>
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Farm Plot Name *</label>
+                            <input type="text" name="farm_name" class="form-control" placeholder="e.g. Green Valley Plot A" required value="{{ form.farm_name.value|default:'' }}">
+                            {% for error in form.farm_name.errors %}<div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Area (Acres) *</label>
+                            <input type="number" step="any" min="0.01" name="area_acres" class="form-control" placeholder="e.g. 10.0" required value="{{ form.area_acres.value|default:'' }}">
+                            {% for error in form.area_acres.errors %}<div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Village *</label>
+                            <input type="text" name="village" class="form-control" placeholder="Village name" required value="{{ form.village.value|default:'' }}">
+                            {% for error in form.village.errors %}<div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">District *</label>
+                            <input type="text" name="district" class="form-control" placeholder="District" required value="{{ form.district.value|default:'' }}">
+                            {% for error in form.district.errors %}<div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">State *</label>
+                            <input type="text" name="state" class="form-control" placeholder="State" required value="{{ form.state.value|default:'' }}">
+                            {% for error in form.state.errors %}<div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Postal Code</label>
+                            <input type="text" name="postal_code" class="form-control" placeholder="PIN code" value="{{ form.postal_code.value|default:'' }}">
+                            {% for error in form.postal_code.errors %}<div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Soil Classification</label>
+                            <input type="text" name="soil_type" class="form-control" placeholder="e.g. Black Cotton, Sandy Loam" value="{{ form.soil_type.value|default:'' }}">
+                            {% for error in form.soil_type.errors %}<div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Irrigation Source</label>
+                            <input type="text" name="irrigation_source" class="form-control" placeholder="e.g. Solar Tube Well, Canal" value="{{ form.irrigation_source.value|default:'' }}">
+                            {% for error in form.irrigation_source.errors %}<div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Khasra / Land Record Survey Number</label>
+                            <input type="text" name="survey_number" class="form-control" placeholder="Official revenue department number" value="{{ form.survey_number.value|default:'' }}">
+                            {% for error in form.survey_number.errors %}<div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-agri px-4 fw-bold">
+                            <i class="bi bi-check-circle me-1"></i> Save Farm Information
+                        </button>
+                        <a href="{% url 'farm_list' %}" class="btn btn-light border px-4">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

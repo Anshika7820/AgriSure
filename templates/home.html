@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}AgriSure | Assured Contract Farming System for Stable Market Access{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center text-lg-start">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <div class="d-inline-flex align-items-center gap-2 bg-success bg-opacity-25 border border-success border-opacity-50 text-light px-3 py-1 rounded-pill small fw-semibold mb-3">
+                    <i class="bi bi-patch-check-fill text-warning"></i> Stabilizing Agricultural Markets Across India
+                </div>
+                <h1 class="hero-title mb-3">
+                    Grow with Confidence.<br>
+                    <span class="text-warning">Sell with Assurance.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Connect directly with verified agricultural buyers, negotiate transparent prices, establish digital farming agreements, and manage fulfillment, deliveries, and escrow payments through one unified platform.
+                </p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                    <a href="{% url 'register_farmer' %}" class="btn btn-agri-gold btn-lg px-4 py-3 fw-bold">
+                        <i class="bi bi-person-badge me-2"></i> Join as Farmer
+                    </a>
+                    <a href="{% url 'register_buyer' %}" class="btn btn-outline-light btn-lg px-4 py-3 fw-bold">
+                        <i class="bi bi-building me-2"></i> Join as Buyer / Trader
+                    </a>
+                    <a href="{% url 'marketplace' %}" class="btn btn-light btn-lg px-4 py-3 fw-bold text-success">
+                        <i class="bi bi-search me-2"></i> Explore Marketplace
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 text-center">
+                <div class="position-relative d-inline-block">
+                    <div class="card border-0 shadow-lg p-3 bg-white rounded-4" style="max-width: 420px; margin: 0 auto;">
+                        <img src="{% static 'images/agrisure_logo.png' %}" alt="AgriSure Emblem" class="img-fluid rounded-3 mb-3 shadow-sm">
+                        <div class="text-start px-2">
+                            <div class="badge bg-success mb-2">Government APMC & Legal Model Aligned</div>
+                            <h5 class="fw-bold text-dark mb-1">Pre-Harvest Contract Assurance</h5>
+                            <p class="text-muted small mb-3">Secures farmers against post-harvest price crashes and protects buyers from quality volatility.</p>
+                            <div class="d-flex justify-content-between align-items-center border-top pt-2">
+                                <span class="small text-muted"><i class="bi bi-shield-lock-fill text-success"></i> Bilateral Digital Signatures</span>
+                                <span class="badge bg-warning text-dark fw-bold">ISO & Legal 65B</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Live Impact Metric Strip -->
+<section class="py-4 bg-white border-bottom shadow-sm">
+    <div class="container">
+        <div class="row g-3 text-center">
+            <div class="col-6 col-md-3">
+                <div class="p-2">
+                    <div class="fs-2 fw-bolder text-success">{{ active_listings_count }}</div>
+                    <div class="small fw-semibold text-muted text-uppercase">Active Crop Lots</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2">
+                    <div class="fs-2 fw-bolder text-warning">{{ active_contracts_count }}</div>
+                    <div class="small fw-semibold text-muted text-uppercase">Executed Contracts</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2">
+                    <div class="fs-2 fw-bolder text-primary">{{ total_farmers }}</div>
+                    <div class="small fw-semibold text-muted text-uppercase">Registered Farmers</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2">
+                    <div class="fs-2 fw-bolder text-dark">{{ total_buyers }}</div>
+                    <div class="small fw-semibold text-muted text-uppercase">Institutional Buyers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 rounded-pill mb-2">END-TO-END WORKFLOW</span>
+            <h2 class="fw-bold display-6">How AgriSure Assured Farming Works</h2>
+            <p class="text-muted col-md-8 mx-auto">From sowing to final weighbridge settlement, every step is transparent, enforceable, and recorded in real time.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4 agri-card-hover">
+                    <div class="stat-icon-wrapper stat-icon-green mx-auto mb-3">
+                        <i class="bi bi-flower1"></i>
+                    </div>
+                    <span class="badge bg-light text-success fw-bold w-auto mx-auto mb-2">Step 01</span>
+                    <h5 class="fw-bold mb-2">Crop Listing</h5>
+                    <p class="text-muted small">Farmers register farms, list crop varieties, expected harvest dates, quality grades, and target asking prices.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4 agri-card-hover">
+                    <div class="stat-icon-wrapper stat-icon-gold mx-auto mb-3">
+                        <i class="bi bi-chat-quote"></i>
+                    </div>
+                    <span class="badge bg-light text-warning fw-bold w-auto mx-auto mb-2">Step 02</span>
+                    <h5 class="fw-bold mb-2">Offer & Negotiation</h5>
+                    <p class="text-muted small">Buyers explore produce, send purchase offers, negotiate volume and rates through a transparent live negotiation audit trail.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4 agri-card-hover">
+                    <div class="stat-icon-wrapper stat-icon-blue mx-auto mb-3">
+                        <i class="bi bi-file-earmark-check"></i>
+                    </div>
+                    <span class="badge bg-light text-primary fw-bold w-auto mx-auto mb-2">Step 03</span>
+                    <h5 class="fw-bold mb-2">Digital Contract</h5>
+                    <p class="text-muted small">Agreed terms formulate an enforceable digital contract with bilateral digital signatures, quality standards, and downloadable PDF.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4 agri-card-hover">
+                    <div class="stat-icon-wrapper stat-icon-purple mx-auto mb-3">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <span class="badge bg-light text-purple fw-bold w-auto mx-auto mb-2">Step 04</span>
+                    <h5 class="fw-bold mb-2">Delivery & Settlement</h5>
+                    <p class="text-muted small">Fulfill scheduled deliveries with weighbridge confirmation, advance deposit, milestone release, and instant tax invoice receipts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Crop Marketplace Preview -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container py-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+                <span class="badge bg-warning bg-opacity-25 text-dark fw-bold px-3 py-1 rounded-pill mb-1">PRODUCE DISCOVERY</span>
+                <h3 class="fw-bold">Active Produce Available for Contract</h3>
+            </div>
+            <a href="{% url 'marketplace' %}" class="btn btn-agri-outline mt-3 mt-md-0">
+                View All Crops in Marketplace <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for crop in featured_crops %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 agri-card agri-card-hover">
+                        <img src="{{ crop.image_url }}" class="crop-card-img" style="height: 180px; width: 100%; object-fit: cover;" alt="{{ crop.crop_name }}">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-light text-success border border-success border-opacity-25 fw-semibold">
+                                    <i class="bi bi-tag-fill me-1"></i> {{ crop.category.name }}
+                                </span>
+                                <span class="badge badge-agri-active">{{ crop.get_status_display }}</span>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-1">{{ crop.crop_name }}</h5>
+                            <div class="text-muted small mb-3">{{ crop.variety|default:"Standard Commercial Variety" }} &bull; {{ crop.quality_grade }}</div>
+
+                            <div class="d-flex justify-content-between align-items-baseline mb-3 bg-light p-3 rounded-3">
+                                <div>
+                                    <div class="small text-muted">Asking Rate</div>
+                                    <div class="crop-card-price">₹ {{ crop.expected_price_per_kg }}<span class="fs-6 fw-normal text-muted">/kg</span></div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small text-muted">Available Volume</div>
+                                    <div class="fw-bold text-dark fs-5">{{ crop.available_quantity_kg|floatformat:0 }} kg</div>
+                                </div>
+                            </div>
+
+                            <div class="small text-muted mb-3">
+                                <div><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ crop.farm.district }}, {{ crop.farm.state }}</div>
+                                <div><i class="bi bi-calendar-event-fill text-primary me-1"></i> Harvest Date: {{ crop.expected_harvest_date|date:"d M Y" }}</div>
+                            </div>
+
+                            <a href="{% url 'crop_detail' crop.id %}" class="btn btn-agri w-100">
+                                View Details & Make Offer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-basket text-muted display-4"></i>
+                    <p class="text-muted mt-2">New harvest seasons are being scheduled. Check back shortly!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Why AgriSure Solves Market Failure -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 rounded-pill mb-2">STABILITY & TRUST</span>
+            <h2 class="fw-bold display-6">Eliminating Uncertainty in Agricultural Marketing</h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 bg-light">
+                    <h4 class="fw-bold text-success mb-3"><i class="bi bi-check2-circle me-2"></i> For Farmers</h4>
+                    <ul class="list-unstyled d-flex flex-column gap-3 text-secondary">
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-shield-check text-success fs-5"></i>
+                            <div><strong>Guaranteed Off-Take:</strong> Secure buyers weeks before harvest to avoid distressing spot market sell-offs.</div>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-shield-check text-success fs-5"></i>
+                            <div><strong>Advance Liquidity:</strong> Contract activation triggers an advance deposit to help manage harvesting costs.</div>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-shield-check text-success fs-5"></i>
+                            <div><strong>Transparent Fair Pricing:</strong> Transparent bilateral counter-offers eliminate predatory commission agents.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 bg-light">
+                    <h4 class="fw-bold text-warning mb-3"><i class="bi bi-building-check me-2"></i> For Agricultural Buyers</h4>
+                    <ul class="list-unstyled d-flex flex-column gap-3 text-secondary">
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-all text-warning fs-5"></i>
+                            <div><strong>Assured Quality Standards:</strong> Enforce strict moisture, purity, and grading specifications in the contract.</div>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-all text-warning fs-5"></i>
+                            <div><strong>Procurement Certainty:</strong> Lock supply volumes and predictable pricing directly from producer farms.</div>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-all text-warning fs-5"></i>
+                            <div><strong>Escrow-Protected Fulfillment:</strong> Milestone payouts released only upon weighbridge scale confirmation.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Frequently Asked Questions -->
+<section class="py-5 bg-white border-top">
+    <div class="container py-3">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Frequently Asked Questions</h2>
+            <p class="text-muted">Answers regarding legality, delivery protocols, and dispute settlements.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="accordion shadow-sm" id="agriFaq">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Are contracts generated on AgriSure legally enforceable?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#agriFaq">
+                            <div class="accordion-body text-secondary small">
+                                Yes. Every agreement conforms with the Indian Contract Act and Section 65B of the Indian Evidence Act for electronic records, capturing cryptographic signature hashes, timestamps, and verifiable party KYC records.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                What happens if a buyer rejects produce or claims quality discrepancies?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#agriFaq">
+                            <div class="accordion-body text-secondary small">
+                                Rejections require verifiable evidence (weighbridge receipts or moisture meter testing reports). If either party disagrees, the AgriSure Dispute Conciliation Module steps in with administrative mediation before statutory escalation.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Can terms be adjusted after signing?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#agriFaq">
+                            <div class="accordion-body text-secondary small">
+                                Yes, through our formal Contract Amendment Workflow. If weather causes yield variations, either party can propose volume or schedule amendments which take effect only when counter-approved.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

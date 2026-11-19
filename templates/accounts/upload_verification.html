@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Submit Verification Document | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="stat-icon-wrapper stat-icon-green mx-auto mb-3">
+                        <i class="bi bi-patch-check"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark">Submit KYC Document</h3>
+                    <p class="text-muted small">Upload your land record, certificate, or business license for administrative verification.</p>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Document Category / Title *</label>
+                        <input type="text" name="document_type" class="form-control" placeholder="e.g. Khasra Land Record, Aadhaar Card, GST Certificate" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Select File (PDF or Image) *</label>
+                        <input type="file" name="document_file" class="form-control" required accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="form-text small">Accepted formats: PDF, PNG, JPG (Max 10 MB). Documents are encrypted and protected.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-agri w-100 py-3 fw-bold">
+                        <i class="bi bi-upload me-1"></i> Upload for Admin Review
+                    </button>
+                    <a href="{% url 'profile' %}" class="btn btn-light w-100 mt-2 border">Back to Profile</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

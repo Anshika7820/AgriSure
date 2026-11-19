@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Payment Voucher #{{ payment.id|stringformat:"06d" }} | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-start mb-4 pb-3 border-bottom">
+                    <div>
+                        <span class="badge bg-light text-dark border mb-1">Official Payment Voucher</span>
+                        <h3 class="fw-bold text-dark mb-0">TXN #{{ payment.id|stringformat:"06d" }}</h3>
+                        <p class="text-muted small mb-0">Contract #<a href="{% url 'contract_detail' payment.contract.id %}" class="text-success text-decoration-none fw-bold">{{ payment.contract.contract_number }}</a></p>
+                    </div>
+                    <div class="text-end">
+                        {% if payment.status == 'SUCCESS' %}
+                            <span class="badge bg-success fs-6"><i class="bi bi-check-circle-fill me-1"></i> SETTLED</span>
+                            <div class="text-muted small mt-1">{{ payment.paid_at|date:"d M Y H:i" }}</div>
+                        {% else %}
+                            <span class="badge bg-warning text-dark fs-6"><i class="bi bi-clock-fill me-1"></i> PENDING PAYMENT</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Amount Box -->
+                <div class="bg-success bg-opacity-10 p-4 rounded-4 mb-4 text-center border border-success border-opacity-25">
+                    <div class="text-muted small text-uppercase fw-bold">Settlement Amount</div>
+                    <div class="display-5 fw-bold text-success mb-1">
+                        ₹ {{ payment.amount|intcomma }} <span class="fs-4 text-muted fw-normal">INR</span>
+                    </div>
+                    <div class="small text-secondary">{{ payment.get_payment_type_display }} &bull; {{ payment.contract.crop_name }}</div>
+                </div>
+
+                <!-- Transaction Details Table -->
+                <h5 class="fw-bold text-dark mb-3">Voucher Details</h5>
+                <table class="table table-bordered small mb-4">
+                    <tbody>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted" style="width: 35%;">Payer (Buyer)</td>
+                            <td>{{ payment.payer.get_full_name|default:payment.payer.username }} ({{ payment.payer.buyer_profile.business_name|default:"Enterprise" }})</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Beneficiary (Farmer)</td>
+                            <td>{{ payment.recipient.get_full_name|default:payment.recipient.username }} ({{ payment.recipient.farmer_profile.farm_name|default:"Registered Farm" }})</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Payment Method</td>
+                            <td>{{ payment.payment_method }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Gateway Order ID</td>
+                            <td><code>{{ payment.gateway_order_id|default:"AUTOGEN-AGRI-SETTLE" }}</code></td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Gateway Payment ID</td>
+                            <td><code>{{ payment.gateway_payment_id|default:"PENDING" }}</code></td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Cryptographic Proof</td>
+                            <td class="text-truncate" style="max-width: 300px;"><code>{{ payment.gateway_signature|default:"Verified upon settlement" }}</code></td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light fw-bold text-muted">Voucher Remarks</td>
+                            <td class="text-muted">{{ payment.notes|default:"Milestone disbursement governed under AgriSure Escrow Settlement Protocol." }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center border-top pt-3">
+                    <a href="{% url 'payment_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Ledger
+                    </a>
+                    <div class="d-flex gap-2">
+                        {% if payment.status == 'SUCCESS' %}
+                            <a href="{% url 'payment_receipt_download' payment.id %}" class="btn btn-agri fw-semibold">
+                                <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Official Receipt PDF
+                            </a>
+                        {% elif payment.status == 'PENDING' and is_payer %}
+                            <a href="{% url 'payment_checkout' payment.id %}" class="btn btn-agri-gold fw-bold px-4">
+                                <i class="bi bi-credit-card me-1"></i> Proceed to Escrow Settlement
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

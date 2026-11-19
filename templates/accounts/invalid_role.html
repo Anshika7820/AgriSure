@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Role Unassigned | AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="card p-5 border-0 shadow-sm mx-auto" style="max-width: 500px;">
+        <i class="bi bi-exclamation-triangle-fill text-warning display-3 mb-3"></i>
+        <h3 class="fw-bold">Role Configuration Pending</h3>
+        <p class="text-muted small">Your account is active but has not been assigned a specific workflow role (Farmer, Buyer, or Administrator).</p>
+        <a href="{% url 'home' %}" class="btn btn-agri mt-3">Return to Home</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign In | AgriSure Contract Farming System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-5">
+            <div class="card agri-card border-0 shadow-lg p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <img src="{% static 'images/agrisure_logo.png' %}" alt="AgriSure Logo" class="mb-2" style="height: 60px; border-radius: 10px;">
+                    <h3 class="fw-bold text-dark">Welcome Back</h3>
+                    <p class="text-muted small">Access your AgriSure contracts, deals, and delivery workflows</p>
+                </div>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger small py-2">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i> Invalid username or password. Please try again.
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-success"></i></span>
+                            <input type="text" name="username" class="form-control bg-light border-start-0" placeholder="Enter your username" required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <label class="form-label small fw-bold text-dark">Password</label>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-success"></i></span>
+                            <input type="password" name="password" id="loginPassword" class="form-control bg-light border-start-0" placeholder="Enter your password" required>
+                            <button type="button" class="btn btn-light border border-start-0 text-muted" onclick="togglePassVisibility()">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-agri w-100 py-2 fw-bold mt-2">
+                        Sign In to AgriSure
+                    </button>
+                </form>
+
+                <div class="border-top my-4 text-center position-relative">
+                    <span class="bg-white px-2 small text-muted position-relative" style="top: -12px;">New to AgriSure?</span>
+                </div>
+
+                <div class="row g-2 text-center">
+                    <div class="col-6">
+                        <a href="{% url 'register_farmer' %}" class="btn btn-outline-success w-100 btn-sm py-2 fw-semibold">
+                            Farmer Sign Up
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{% url 'register_buyer' %}" class="btn btn-outline-warning text-dark w-100 btn-sm py-2 fw-semibold">
+                            Buyer Sign Up
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Demonstration Credentials Card -->
+                <div class="mt-4 p-3 bg-light rounded-3 border small">
+                    <div class="fw-bold text-dark mb-1"><i class="bi bi-info-circle text-primary me-1"></i> Quick Demo Logins:</div>
+                    <div class="text-muted" style="font-size: 0.78rem;">
+                        <div><strong>Farmer:</strong> <span class="badge bg-secondary">farmer1</span> / <span class="badge bg-secondary">farmer@123</span></div>
+                        <div class="mt-1"><strong>Buyer:</strong> <span class="badge bg-secondary">buyer1</span> / <span class="badge bg-secondary">buyer@123</span></div>
+                        <div class="mt-1"><strong>Admin:</strong> <span class="badge bg-secondary">admin</span> / <span class="badge bg-secondary">admin@123</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePassVisibility() {
+    const input = document.getElementById("loginPassword");
+    const icon = document.getElementById("toggleIcon");
+    if (input.type === "password") {
+        input.type = "text";
+        icon.className = "bi bi-eye-slash";
+    } else {
+        input.type = "password";
+        icon.className = "bi bi-eye";
+    }
+}
+</script>
+{% endblock %}
